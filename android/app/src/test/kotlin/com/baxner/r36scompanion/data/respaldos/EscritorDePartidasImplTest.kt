@@ -172,7 +172,8 @@ class EscritorDePartidasImplTest {
     fun `si tambien falla devolver el estado automatico, el error lo dice`() = runTest {
         val juegoId = sembrarJuego()
         sesion.falloEnEscribirSeguro = { IOException("se cayó la red a medio subir") }
-        sesion.falloEnMover = { IOException("tampoco hay red para devolverlo") }
+        // Solo falla el mover de deshacer (el de apartar, "rutaEstadoAutomatico -> ..." , tiene que funcionar).
+        sesion.falloEnMover = { desde, _ -> if (desde == rutaEstadoAutomatico) null else IOException("tampoco hay red para devolverlo") }
 
         val excepcion = intentarEscribir(juegoId, "editado".toByteArray(), base = null)
 
@@ -184,7 +185,10 @@ class EscritorDePartidasImplTest {
     @Test
     fun `restaurar no exige una base concreta pero respalda lo que habia`() = runTest {
         val juegoId = sembrarJuego()
-        val versionOriginalId = repositorio.versiones(juegoId).first().single { it.origen == OrigenDeVersion.CONSOLA }.id
+        // El seed respalda tres archivos del juego (partida, estado automático, estado manual):
+        // los tres quedan como origen CONSOLA, así que hay que acotar también por tipo.
+        val versionOriginalId = repositorio.versiones(juegoId).first()
+            .single { it.origen == OrigenDeVersion.CONSOLA && it.tipo == TipoDeArchivo.PARTIDA }.id
 
         reloj.avanzar(1_000)
         escritor.escribir(sesion, juegoId, "editado".toByteArray(), base = AlmacenDeBlobs.sha256Hex(bytesOriginales))

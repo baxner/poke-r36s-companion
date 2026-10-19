@@ -33,7 +33,8 @@ class SesionDeConsolaFalsa(
 
     var juegosAbiertosSimulados: List<JuegoAbierto> = emptyList()
     var falloEnEscribirSeguro: (() -> Throwable)? = null
-    var falloEnMover: (() -> Throwable)? = null
+    /** Por [desde]/[hacia], para poder fallar solo un `mover` concreto (p. ej. el de deshacer, no el de apartar). */
+    var falloEnMover: ((desde: String, hacia: String) -> Throwable?)? = null
     private val fallosAlLeer = mutableMapOf<String, () -> Throwable>()
 
     /** Pone o reemplaza un archivo, como si ya estuviera en la consola antes de la prueba. */
@@ -104,7 +105,7 @@ class SesionDeConsolaFalsa(
     }
 
     override suspend fun mover(desde: String, hacia: String) {
-        falloEnMover?.let { throw it() }
+        falloEnMover?.invoke(desde, hacia)?.let { throw it }
         if (hacia in archivos) throw ErrorDeConsola.YaExiste(hacia)
         val archivo = archivos.remove(desde) ?: throw ErrorDeConsola.NoExiste(desde)
         archivos[hacia] = archivo
