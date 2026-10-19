@@ -13,3 +13,6 @@ android/.kotlin/
 android/build/
 android/app/build/
 .DS_Store
+
+# Generado por scripts/bajar-sprites.sh (sprites de Nintendo, uso personal).
+android/app/src/main/assets/sprites/
