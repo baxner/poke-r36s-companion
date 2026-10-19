@@ -258,6 +258,30 @@ Por el túnel adb → S24 (`rndis0` 10.101.33.64) → consola (esta vez en 10.10
 - **Pantalla de anclaje del S24:** la acción `android.settings.TETHER_SETTINGS` resuelve a
   `com.android.settings/.Settings$SecTetherSettingsActivity` (la de Samsung); la app la intenta primero.
 
+### Prueba técnica del intercambio real (2026-10-19)
+
+- **mGBA 0.10.5 compila para Android sin cambios** como librería estática (`libmgba.a`, 7.9 MB
+  para arm64) con el NDK 27 y el CMake del SDK:
+  `cmake <mgba> -G Ninja -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake
+  -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=26 -DCMAKE_BUILD_TYPE=Release -DLIBMGBA_ONLY=ON
+  -DM_CORE_GB=OFF -DM_CORE_GBA=ON -DUSE_DEBUGGERS=OFF -DUSE_GDB_STUB=OFF -DUSE_EDITLINE=OFF
+  -DUSE_FFMPEG=OFF -DUSE_ZLIB=OFF -DUSE_MINIZIP=OFF -DUSE_PNG=OFF -DUSE_LIBZIP=OFF
+  -DUSE_SQLITE3=OFF -DUSE_ELF=OFF -DUSE_LZMA=OFF -DUSE_LUA=OFF -DENABLE_SCRIPTING=OFF`.
+- **El cable link** de la 0.10.5 es `GBASIOLockstep` + un `GBASIOLockstepNode` por juego, puesto
+  como driver de `SIO_MULTI` y de `SIO_NORMAL_32` (`GBASIOSetDriver`). Los callbacks de
+  `mLockstep` (`lock`, `unlock`, `signal`, `wait`, `addCycles`, `useCycles`, `unusedCycles`,
+  `unload`) los pone el frontend: hay que portar a C los de
+  `src/platform/qt/MultiplayerController.cpp` (~150 líneas), con cada juego en su `mCoreThread`
+  (`mCoreThreadWaitFromThread`/`mCoreThreadStopWaiting`) y el "sync" de cada hilo
+  (`impl->sync.audioWait`/`videoFrameWait`) apagado para los que esperan al jugador 1.
+  Ojo: `mLockstepInit` pone `lock`/`unlock` en NULL; `GBASIOLockstepInit` no toca los callbacks.
+  Orden: `mLockstepInit(&enlace.d)` → poner los callbacks → `GBASIOLockstepInit(&enlace)` →
+  por cada juego `GBASIOLockstepNodeCreate` + `GBASIOLockstepAttachNode` + los dos `GBASIOSetDriver`.
+- **Falta probar el intercambio dentro de los juegos**, que no se puede automatizar fácil (hay que
+  caminar al Club de Cable en los dos). Se probará a mano en la app con la pantalla doble. Las
+  partidas se guardan en el archivo que se le da al núcleo (`core->loadSave`), y mGBA las escribe
+  al guardar en el juego y al cerrar.
+
 Reparto igual que en Vigía: Opus diseña, revisa e integra; Sonnet implementa módulos bien
 especificados; Haiku solo tareas mecánicas. Máximo dos subagentes a la vez, cada uno en su
 worktree. Los nombres de Pokémon, movimientos y objetos en español salen del propio PKHeX, que
