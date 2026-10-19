@@ -13,6 +13,14 @@ import com.baxner.r36scompanion.data.editor.ResumenDePokemon
  * dos partidas exportadas. La evolución por intercambio va como `arrivals[].patch` (especie
  * nueva y, si gasta objeto, `heldItem` 0), decidida con [EvolucionesPorIntercambio].
  *
+ * Probado con el Rojo Fuego real contra una copia de sí mismo (2026-10-19): con A cargada,
+ * `transfer.open(bytesDeB, "B.srm")` → `transfer.partnerBoxes()` lista equipo y cajas de B →
+ * cada llegada con evolución lleva `{at: <casilla de origen>, bytes: transfer.export(at, "mine").bytes
+ * (el Pokémon ya en el formato de B, 100 bytes), patch: {species: 65}}` → `transfer.preview` dio
+ * Kadabra → Alakazam legal, con `saveChanges` `pokedexCaught` en el que recibe → `transfer.commit`
+ * devolvió `save` y `partner` (131 072 bytes cada una) y `arrived` con la casilla de caja donde cayó
+ * cada uno (la primera libre); en B el Alakazam quedó legal.
+ *
  * Escribir en la consola son DOS partidas: [EjecutorDeIntercambio.escribirEnLaConsola] escribe A y
  * luego B con `EscritorDePartidas` (cada una con su respaldo previo y su estado automático
  * apartado). **Si B falla después de escribir A, se restaura A** a su versión de antes del
