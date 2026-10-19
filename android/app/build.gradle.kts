@@ -106,7 +106,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mina.sshd.core)
     testImplementation(libs.mina.sshd.sftp)
-    testImplementation("org.slf4j:slf4j-simple:2.0.17") // DIAGNÓSTICO TEMPORAL, quitar después
 
     // Capturas de Compose en la JVM (Roborazzi + Robolectric), como en Vigía. Roborazzi fijo en
     // 1.60.0: las siguientes compilan con Kotlin 2.3 y nuestro 2.1.20 no lee su metadata.
