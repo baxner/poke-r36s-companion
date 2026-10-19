@@ -13,7 +13,7 @@ import com.baxner.r36scompanion.data.consola.SesionDeConsola
  * (segundos UTC, como SFTP); las carpetas se registran aparte para que `listar` también pueda
  * devolver subcarpetas (p. ej. una `.pr36c/` oculta, para probar que se ignora).
  *
- * [juegosAbiertos] y los fallos de [escribirSeguro]/[mover] son inyectables: los casos de
+ * [juegosAbiertosSimulados] y los fallos de [escribirSeguro]/[mover] son inyectables: los casos de
  * seguridad del escritor (juego abierto, falla a medio camino) se simulan poniéndolos antes de
  * llamar al método bajo prueba.
  */

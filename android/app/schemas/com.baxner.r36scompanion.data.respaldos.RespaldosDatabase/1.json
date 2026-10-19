@@ -1,0 +1,199 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "6bcc011ddb0a68b7337d2b2bd6d889e4",
+    "entities": [
+      {
+        "tableName": "juegos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `sistema` TEXT NOT NULL, `nombre` TEXT NOT NULL, `rutaDePartida` TEXT NOT NULL, `esPokemon` INTEGER NOT NULL, `editable` INTEGER NOT NULL, `ultimoRespaldo` INTEGER, `resumenJson` TEXT, `estadoDePartida` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sistema",
+            "columnName": "sistema",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nombre",
+            "columnName": "nombre",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rutaDePartida",
+            "columnName": "rutaDePartida",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "esPokemon",
+            "columnName": "esPokemon",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "editable",
+            "columnName": "editable",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ultimoRespaldo",
+            "columnName": "ultimoRespaldo",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "resumenJson",
+            "columnName": "resumenJson",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "estadoDePartida",
+            "columnName": "estadoDePartida",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_juegos_sistema_nombre",
+            "unique": true,
+            "columnNames": [
+              "sistema",
+              "nombre"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_juegos_sistema_nombre` ON `${TABLE_NAME}` (`sistema`, `nombre`)"
+          }
+        ]
+      },
+      {
+        "tableName": "versiones",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `juegoId` INTEGER NOT NULL, `tipo` TEXT NOT NULL, `rutaEnConsola` TEXT NOT NULL, `sha256` TEXT NOT NULL, `tamano` INTEGER NOT NULL, `modificadoEnConsola` INTEGER NOT NULL, `respaldadaEn` INTEGER NOT NULL, `origen` TEXT NOT NULL, `estadoDePartida` TEXT NOT NULL, `resumenJson` TEXT, FOREIGN KEY(`juegoId`) REFERENCES `juegos`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "juegoId",
+            "columnName": "juegoId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tipo",
+            "columnName": "tipo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rutaEnConsola",
+            "columnName": "rutaEnConsola",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sha256",
+            "columnName": "sha256",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tamano",
+            "columnName": "tamano",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modificadoEnConsola",
+            "columnName": "modificadoEnConsola",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "respaldadaEn",
+            "columnName": "respaldadaEn",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "origen",
+            "columnName": "origen",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "estadoDePartida",
+            "columnName": "estadoDePartida",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "resumenJson",
+            "columnName": "resumenJson",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_versiones_juegoId",
+            "unique": false,
+            "columnNames": [
+              "juegoId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_versiones_juegoId` ON `${TABLE_NAME}` (`juegoId`)"
+          },
+          {
+            "name": "index_versiones_rutaEnConsola",
+            "unique": false,
+            "columnNames": [
+              "rutaEnConsola"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_versiones_rutaEnConsola` ON `${TABLE_NAME}` (`rutaEnConsola`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "juegos",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "juegoId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6bcc011ddb0a68b7337d2b2bd6d889e4')"
+    ]
+  }
+}

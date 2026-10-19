@@ -79,8 +79,8 @@ internal class NucleoDeRespaldos(
             resumenJson = resumenJson,
         )
 
-        val id = db.withTransaction {
-            val id = dao.insertarVersion(entidad)
+        val idDeLaVersion = db.withTransaction {
+            val nuevoId = dao.insertarVersion(entidad)
             if (tipo == TipoDeArchivo.PARTIDA) {
                 dao.actualizarResumenDeJuego(
                     id = juego.id,
@@ -93,9 +93,9 @@ internal class NucleoDeRespaldos(
             } else {
                 dao.tocarUltimoRespaldo(juego.id, ahora)
             }
-            id
+            nuevoId
         }
-        return entidad.copy(id = id).aDominio()
+        return entidad.copy(id = idDeLaVersion).aDominio()
     }
 
     private suspend fun estadoYResumenDePartida(bytes: ByteArray, nombreDeArchivo: String): Pair<EstadoDePartida, ResumenGuardado?> =
