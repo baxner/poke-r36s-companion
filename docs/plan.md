@@ -242,6 +242,22 @@ nube. La app solo se conecta a direcciones privadas (la consola).
   anterior `GBASIOLockstep`). Se compila con el NDK y una capa JNI propia: dos núcleos, cada
   uno en su hilo, unidos por el coordinador.
 
+### Pruebas con la consola real (2026-10-19)
+
+Por el túnel adb → S24 (`rndis0` 10.101.33.64) → consola (esta vez en 10.101.33.121), con
+`PR36C_CONSOLA=127.0.0.1:8022` y `PruebaConConsolaRealTest` (no corre en las pruebas normales):
+- **Conexión:** llave ED25519 `SHA256:…` (la misma que da
+  `ssh-keygen` en la consola), por BouncyCastle como en Android; equipo `rg351mp`. Con la huella
+  fijada entra; con otra la rechaza sin mandar la contraseña.
+- **Lectura:** las 11 `.srm`, idénticas al respaldo de la mañana. Sin juegos abiertos. Los dos
+  `retroarch.cfg` (64 y 32 bits) leídos bien: carga y guardado automático de estados encendidos.
+- **Escritura segura en exFAT** (`/dev/mmcblk0p3`): crear, reemplazar, verificar, `sync -f`,
+  mover sin pisar y sin temporales, todo en una carpeta oculta de prueba que se borró al terminar.
+- **Si la consola se reinicia**, los servicios remotos se apagan (22, 80 y 445 cerrados aunque
+  responde al ping): es el estado `NoEncontrada` de la app, y su texto tiene que decirlo.
+- **Pantalla de anclaje del S24:** la acción `android.settings.TETHER_SETTINGS` resuelve a
+  `com.android.settings/.Settings$SecTetherSettingsActivity` (la de Samsung); la app la intenta primero.
+
 Reparto igual que en Vigía: Opus diseña, revisa e integra; Sonnet implementa módulos bien
 especificados; Haiku solo tareas mecánicas. Máximo dos subagentes a la vez, cada uno en su
 worktree. Los nombres de Pokémon, movimientos y objetos en español salen del propio PKHeX, que

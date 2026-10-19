@@ -59,6 +59,29 @@ class AnclajeAndroidTest {
         assertEquals("com.android.settings.Settings\$TetherSettingsActivity", siguiente?.component?.className)
     }
 
+    @Test
+    fun `abrirAjustesDeAnclaje usa la accion de anclaje si una pantalla la declara (como en el S24)`() {
+        registrarActividad(context, "com.android.settings", "com.android.settings.Settings\$SecTetherSettingsActivity")
+        shadowOf(context.packageManager).addIntentFilterForActivity(
+            android.content.ComponentName("com.android.settings", "com.android.settings.Settings\$SecTetherSettingsActivity"),
+            android.content.IntentFilter("android.settings.TETHER_SETTINGS").apply { addCategory(android.content.Intent.CATEGORY_DEFAULT) },
+        )
+
+        assertTrue(anclaje.abrirAjustesDeAnclaje())
+
+        assertEquals("android.settings.TETHER_SETTINGS", shadowOf(context).nextStartedActivity?.action)
+    }
+
+    @Test
+    fun `abrirAjustesDeAnclaje prefiere la pantalla de Samsung a la de AOSP`() {
+        registrarActividad(context, "com.android.settings", "com.android.settings.TetherSettings")
+        registrarActividad(context, "com.android.settings", "com.android.settings.Settings\$SecTetherSettingsActivity")
+
+        assertTrue(anclaje.abrirAjustesDeAnclaje())
+
+        assertEquals("com.android.settings.Settings\$SecTetherSettingsActivity", shadowOf(context).nextStartedActivity?.component?.className)
+    }
+
     private fun registrarActividad(context: Context, paquete: String, clase: String) {
         val info = ActivityInfo().apply {
             packageName = paquete

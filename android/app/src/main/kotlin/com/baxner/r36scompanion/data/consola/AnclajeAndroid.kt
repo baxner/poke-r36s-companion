@@ -34,12 +34,17 @@ class AnclajeAndroid(private val context: Context) : Anclaje {
         estadoDelAnclaje(cableConectado(), interfacesDeAnclajeDesde(interfacesDeRed()))
 
     /**
-     * Prueba, en orden, los componentes conocidos de la pantalla de anclaje ([ComponentesConocidos]:
-     * Samsung y AOSP) comprobando con [android.content.pm.PackageManager.resolveActivity] antes de
-     * lanzar; si ninguno existe en este equipo, abre los ajustes de redes inalámbricas genéricos.
-     * Nunca truena por falta de uno: si de plano nada resuelve, devuelve `false`.
+     * Abre la pantalla de anclaje del teléfono. Primero por la acción `android.settings.TETHER_SETTINGS`
+     * (oculta en el SDK, pero cada fabricante la declara en su propia pantalla: en el S24 del usuario
+     * resuelve a `Settings$SecTetherSettingsActivity`, la de Samsung, comprobado con `adb shell cmd
+     * package resolve-activity` el 2026-10-19); si no resuelve, los componentes conocidos
+     * ([ComponentesConocidos]); y si nada de eso existe, los ajustes de redes inalámbricas genéricos.
+     * Siempre comprueba con [android.content.pm.PackageManager.resolveActivity] antes de lanzar y
+     * nunca truena: si de plano nada resuelve, devuelve `false`.
      */
     override fun abrirAjustesDeAnclaje(): Boolean {
+        val porAccion = Intent(AccionAjustesDeAnclaje).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (context.packageManager.resolveActivity(porAccion, 0) != null && intentarAbrir(porAccion)) return true
         for (componente in ComponentesConocidos) {
             val intent = Intent().setComponent(componente).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             if (context.packageManager.resolveActivity(intent, 0) != null && intentarAbrir(intent)) return true
@@ -87,12 +92,15 @@ class AnclajeAndroid(private val context: Context) : Anclaje {
         private const val AccionUsbState = "android.hardware.usb.action.USB_STATE"
         private const val ExtraConectado = "connected"
 
+        /** La acción que declaran las pantallas de anclaje (no es una constante pública del SDK). */
+        private const val AccionAjustesDeAnclaje = "android.settings.TETHER_SETTINGS"
+
         /**
-         * Samsung (el S24 del usuario) y AOSP, en ese orden; ver el encargo de este módulo para el
-         * porqué de la lista exacta. [PackageManager.resolveActivity] descarta la que no exista
-         * en este equipo antes de intentar lanzarla.
+         * Si la acción no resuelve: Samsung (la de One UI en el S24 del usuario, y la anterior) y AOSP,
+         * en ese orden. [PackageManager.resolveActivity] descarta la que no exista en este equipo.
          */
         private val ComponentesConocidos = listOf(
+            ComponentName("com.android.settings", "com.android.settings.Settings\$SecTetherSettingsActivity"),
             ComponentName("com.android.settings", "com.android.settings.Settings\$TetherSettingsActivity"),
             ComponentName("com.android.settings", "com.android.settings.TetherSettings"),
         )
