@@ -1,10 +1,10 @@
 Normal
-Pelea
+Lucha
 Volador
 Veneno
 Tierra
 Roca
-Insecto
+Bicho
 Fantasma
 Acero
 Fuego

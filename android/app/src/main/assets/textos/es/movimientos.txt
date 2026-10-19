@@ -1,6 +1,6 @@
 —
 Destructor
-Golpe Karate
+Golpe Kárate
 Doble Bofetón
 Puño Cometa
 Megapuño
@@ -9,17 +9,17 @@ Puño Fuego
 Puño Hielo
 Puño Trueno
 Arañazo
-Fuerza de Garra
+Agarre
 Guillotina
 Viento Cortante
-Danza de Espadas
+Danza Espada
 Corte
-Ráfaga de Aire
-Ataque de Ala
-Torbellino
+Tornado
+Ataque Ala
+Remolino
 Vuelo
 Atadura
-Golpazo
+Atizar
 Látigo Cepa
 Pisotón
 Doble Patada
@@ -28,35 +28,35 @@ Patada Salto
 Patada Giro
 Ataque Arena
 Golpe Cabeza
-Ataque Cuerno
+Cornada
 Ataque Furia
-Cuerno Taladro
-Tacleada
-Golpe de Cuerpo
+Perforador
+Placaje
+Golpe Cuerpo
 Constricción
 Derribo
-Golpiza
+Saña
 Doble Filo
-Látigo de Cola
-Piquete Venenoso
-Doble Aguijón
-Misil Aguja
+Agitacola
+Picotazo Veneno
+Doble Ataque
+Pin Misil
 Malicioso
-Mordida
+Mordisco
 Gruñido
 Rugido
 Canto
 Supersónico
-Explosión Sónica
+Bomba Sónica
 Anulación
 Ácido
-Brasas
+Ascuas
 Lanzallamas
 Neblina
-Chorro de Agua
+Pistola Agua
 Hidrobomba
 Surf
-Rayo de Hielo
+Rayo Hielo
 Ventisca
 Psicorrayo
 Rayo Burbuja
@@ -69,21 +69,21 @@ Patada Baja
 Contraataque
 Sísmico
 Fuerza
-Absorción
-Megadrenado
+Absorber
+Megaagotar
 Drenadoras
-Crecimiento
-Hojas Navaja
+Desarrollo
+Hoja Afilada
 Rayo Solar
-Polvo Venenoso
+Polvo Veneno
 Paralizador
 Somnífero
-Danza de Pétalos
-Disparo de Seda
+Danza Pétalo
+Disparo Demora
 Furia Dragón
 Giro Fuego
 Impactrueno
-Atactrueno
+Rayo
 Onda Trueno
 Trueno
 Lanzarrocas
@@ -92,7 +92,7 @@ Fisura
 Excavar
 Tóxico
 Confusión
-Fuerza Psíquica
+Psíquico
 Hipnosis
 Meditación
 Agilidad
@@ -100,59 +100,59 @@ Ataque Rápido
 Furia
 Teletransporte
 Tinieblas
-Mímica
-Chillido
+Mimético
+Chirrido
 Doble Equipo
 Recuperación
 Fortaleza
 Reducción
 Pantalla de Humo
-Rayo de Confusión
+Rayo Confuso
 Refugio
-Hacerse Bolita
+Rizo Defensa
 Barrera
 Pantalla de Luz
 Niebla
 Reflejo
-Centrar Energía
+Foco Energía
 Venganza
 Metrónomo
 Espejo
 Autodestrucción
 Bomba Huevo
 Lengüetazo
-Humo
+Polución
 Residuos
-Maza de Hueso
+Hueso Palo
 Llamarada
 Cascada
 Tenaza
 Meteoros
 Cabezazo
-Cañón de Púas
+Clavo Cañón
 Restricción
 Amnesia
 Kinético
 Ovocuración
-Pat. Salto Alto
-Fulmirada
+Pat. Salto Alta
+Deslumbrar
 Comesueños
 Gas Venenoso
 Bombardeo
 Chupavidas
 Beso Amoroso
-Ataque Celestial
+Ataque Aéreo
 Transformación
 Burbuja
-Puño Mareador
-Esporas
+Puño Mareo
+Espora
 Destello
 Psicoonda
 Salpicadura
 Armadura Ácida
 Martillazo
 Explosión
-Garras Furiosas
+Golpes Furia
 Huesomerang
 Descanso
 Avalancha
@@ -160,17 +160,17 @@ Hipercolmillo
 Afilar
 Conversión
 Triataque
-Supercolmillo
+Superdiente
 Cuchillada
 Sustituto
 Forcejeo
-Boceto
+Esquema
 Triple Patada
 Ladrón
 Telaraña
 Telépata
 Pesadilla
-Rueda Ígnea
+Rueda Fuego
 Ronquido
 Maldición
 Azote
@@ -179,96 +179,96 @@ Aerochorro
 Esporagodón
 Inversión
 Rencor
-Polvo de Nieve
+Nieve Polvo
 Protección
-Superpuño
-Cara Aterradora
-Ataque Finta
+Ultrapuño
+Cara Susto
+Finta
 Beso Dulce
 Tambor
 Bomba Lodo
 Bofetón Lodo
-Octazuca
+Pulpocañón
 Púas
 Electrocañón
-Visión
-Lazo del Destino
+Profecía
+Mismo Destino
 Canto Mortal
-Viento Helado
+Viento Hielo
 Detección
-Hueso Veloz
+Ataque Óseo
 Fijar Blanco
 Enfado
 Tormenta Arena
 Gigadrenado
 Aguante
 Encanto
-Rodada
-Falsa Bofetada
-Fanfarronear
-Licuado
+Rodar
+Falso Tortazo
+Contoneo
+Batido
 Chispa
 Corte Furia
 Ala de Acero
 Mal de Ojo
 Atracción
 Sonámbulo
-Cascabel Sanador
+Cascabel Cura
 Retribución
-Obsequio
+Presente
 Frustración
 Velo Sagrado
-Dividedolor
+Divide Dolor
 Fuego Sagrado
 Magnitud
 Puño Dinámico
 Megacuerno
-Aliento Dragón
+Dragoaliento
 Relevo
 Otra Vez
 Persecución
 Giro Rápido
 Dulce Aroma
-Cola de Hierro
-Garra de Metal
+Cola Férrea
+Garra Metal
 Llave Vital
-Sol Matutino
+Sol Matinal
 Fotosíntesis
 Luz Lunar
 Poder Oculto
-Golpe Cruzado
-Tornado
-Danza de Lluvia
+Tajo Cruzado
+Ciclón
+Danza Lluvia
 Día Soleado
 Triturar
-Escudo Espejo
+Manto Espejo
 Autosugestión
 Veloc. Extrema
-Poder Antiguo
+Poder Pasado
 Bola Sombra
 Premonición
 Golpe Roca
-Remolino
+Torbellino
 Paliza
 Sorpresa
 Alboroto
 Reserva
-Escupida
+Escupir
 Tragar
 Onda Ígnea
 Granizo
 Tormento
-Halago
+Camelo
 Fuego Fatuo
-Recuerdo
-Fachada
-Puño Centrado
+Legado
+Imagen
+Puño Certero
 Estímulo
 Señuelo
 Adaptación
 Carga
-Provocación
-Refuerzos
+Mofa
+Refuerzo
 Truco
 Imitación
 Deseo
@@ -278,7 +278,7 @@ Fuerza Bruta
 Capa Mágica
 Reciclaje
 Desquite
-Karatazo
+Demolición
 Bostezo
 Desarme
 Esfuerzo
@@ -288,141 +288,141 @@ Sellar
 Alivio
 Rabia
 Robo
-Poder Secreto
+Daño Secreto
 Buceo
 Empujón
 Camuflaje
 Luminicola
 Resplandor
 Bola Neblina
-Danza de Plumas
-Danza del Caos
+Danza Pluma
+Danza Caos
 Patada Ígnea
-Chapoteo de Lodo
+Chapoteo Lodo
 Bola Hielo
-Brazo Aguja
-Relajar
-Hipervoz
+Brazo Pincho
+Relajo
+Vozarrón
 Colmillo Veneno
 Garra Brutal
-Anillo de Fuego
+Anillo Ígneo
 Hidrocañón
 Puño Meteoro
-Impresión
+Impresionar
 Meteorobola
 Aromaterapia
 Llanto Falso
-Aire Cortante
-Supercalor
+Aire Afilado
+Sofoco
 Rastreo
-Tumba de Rocas
-Viento Plateado
-Sonido Metálico
-Silbato de Hoja
+Tumba Rocas
+Viento Plata
+Eco Metálico
+Silbato
 Cosquillas
 Masa Cósmica
-Columna de Agua
+Salpicar
 Rayo Señal
 Puño Sombra
-Extrasensorial
-Corte Elevado
-Tumba de Arena
-Frío Extremo
+Paranormal
+Gancho Alto
+Bucle Arena
+Frío Polar
 Agua Lodosa
-Bala Semilla
-As Aéreo
-Lanza de Hielo
-Defensa Hierro
+Semilladora
+Golpe Aéreo
+Carámbano
+Defensa Férrea
 Bloqueo
 Aullido
 Garra Dragón
 Planta Feroz
 Corpulencia
-Rebote
-Disparo de Lodo
-Cola Venenosa
+Bote
+Disparo Lodo
+Cola Veneno
 Antojo
-Tacleada de Voltios
-Hojas Mágicas
-Chapoteo de Agua
+Placaje Eléc
+Hoja Mágica
+Hidrochorro
 Paz Mental
 Hoja Aguda
-Danza de Dragón
+Danza Dragón
 Pedrada
-Onda de Choque
-Pulso de Agua
-Deseo Final
-Psicoimpulso
+Onda Voltio
+Hidropulso
+Deseo Oculto
+Psicoataque
 Respiro
 Gravedad
 Gran Ojo
-Despabilador
-Brazo Martillo
+Espabila
+Machada
 Giro Bola
-Deseo Sanador
-Agua Salada
+Deseo Cura
+Salmuera
 Don Natural
 Amago
 Picoteo
 Viento Afín
 Acupresión
-Expl. Metálica
+Represión Metal
 Ida y Vuelta
-Cuerpo a Cuerpo
-Revancha
-Garantía
+A Bocajarro
+Vendetta
+Buena Baza
 Embargo
 Lanzamiento
 Psicocambio
 As Oculto
-Anticuración
-Apretón
+Anticura
+Estrujón
 Truco Fuerza
-Ácido Gástrico
-Cántico Suerte
+Bilis
+Conjuro
 Yo Primero
 Copión
 Cambiafuerza
 Cambiadefensa
 Castigo
-Último Recurso
+Última Baza
 Abatidoras
 Golpe Bajo
 Púas Tóxicas
 Cambiaalmas
-Acuaanillo
-Superimán
-Erupción
-Fuerza de Palma
-Aura Esfera
+Acua Aro
+Levitón
+Envite Ígneo
+Palmeo
+Esfera Aural
 Pulimento
-Golpe Venenoso
-Pulso Oscuro
-Corte Umbrío
-Cola de Agua
-Bomba Semilla
-Corte Aéreo
+Puya Nociva
+Pulso Umbrío
+Tajo Umbrío
+Acua Cola
+Bomba Germen
+Tajo Aéreo
 Tijera X
 Zumbido
 Pulso Dragón
 Carga Dragón
 Joya de Luz
-Puño Drenador
-Onda de Vacío
-Ataque Centrado
-Bola de Energía
-Ave Brava
-Poder Terrestre
-Trueque
+Puño Drenaje
+Onda Vacío
+Onda Certera
+Energibola
+Pájaro Osado
+Tierra Viva
+Trapicheo
 Gigaimpacto
 Maquinación
 Puño Bala
 Alud
 Esquirla Helada
-Garra de Sombra
-Colmillo Trueno
+Garra Umbría
+Colmillo Rayo
 Colmillo Hielo
-Colmillo Fuego
+Colmillo Ígneo
 Sombra Vil
 Bomba Fango
 Psicocorte
@@ -430,87 +430,87 @@ Cabezazo Zen
 Disparo Espejo
 Cañón Resplandor
 Treparrocas
-Desempañar
+Despejar
 Espacio Raro
-Meteoro Dragón
+Cometa Draco
 Chispazo
-Bomba de Lava
-Tormenta Hojas
+Humareda
+Lluevehojas
 Latigazo
 Romperrocas
 Veneno X
 Lanzamugre
 Cabeza de Hierro
-Magnetobomba
+Bomba Imán
 Roca Afilada
 Seducción
-Trampa de Rocas
-Nudo de Pasto
-Parloteo
-Juicio Final
+Trampa Rocas
+Hierba Lazo
+Cháchara
+Sentencia
 Picadura
 Rayo Carga
 Mazazo
-Acuajet
+Acua Jet
 Al Ataque
 A Defender
 Auxilio
-Topetazo
+Testarazo
 Doble Golpe
-Rugido Temporal
-Corte Espacial
-Danza de la Luna
-Garra Aplastante
+Distorsión
+Corte Vacío
+Danza Lunar
+Agarrón
 Lluvia Ígnea
-Abismo Negro
+Brecha Negra
 Fulgor Semilla
-Viento Ominoso
+Viento Aciago
 Golpe Umbrío
 Afilagarras
-Guardia Amplia
-Guardia Dividida
-Fuerza Dividida
+Vasta Guardia
+Isoguardia
+Isofuerza
 Zona Extraña
-Choque Psíquico
+Psicocarga
 Carga Tóxica
 Aligerar
 Polvo Ira
 Telequinesis
 Zona Mágica
 Antiaéreo
-Llave Tempestad
-Golpe de Fuego
-Ola de Lodo
-Danza del Aleteo
-Golpe Pesado
+Llave Corsé
+Pirotecnia
+Onda Tóxica
+Danza Aleteo
+Cuerpo Pesado
 Sincrorruido
-Electrobola
+Bola Voltio
 Empapar
-Carga de Fuego
+Nitrocarga
 Enrosque
-Barredora
+Puntapié
 Bomba Ácida
 Juego Sucio
 Onda Simple
 Danza Amiga
-Ceda el Paso
+Cede Paso
 Canon
 Eco Voz
 Guardia Baja
-Humo Claro
-Poder Acumulado
-Defensa Rápida
-Cambio de Lado
+Niebla Clara
+Poder Reserva
+Anticipo
+Cambio de Banda
 Escaldar
 Rompecoraza
-Pulso Sanador
+Pulso Cura
 Infortunio
 Caída Libre
 Cambio de Marcha
 Llave Giro
-Incinerar
+Calcinación
 Último Lugar
-Acrobacia
+Acróbata
 Clonatipo
 Represalia
 Sacrificio
@@ -519,42 +519,42 @@ Infierno
 Voto Agua
 Voto Fuego
 Voto Planta
-Cambiavoltaje
-Lucha Insecto
+Voltiocambio
+Estoicismo
 Terratemblor
-Vaho Helado
-Cola de Dragón
+Vaho Gélido
+Cola Dragón
 Avivar
 Electrotela
-Carga Salvaje
+Voltio Cruel
 Taladradora
-Golpe Dual
-Sello de Corazón
-Drenacuerno
-Espada Sagrada
-Coraza Afilada
-Golpe de Calor
+Golpe Bis
+Arrumaco
+Asta Drenaje
+Espada Santa
+Concha Filo
+Golpe Calor
 Ciclón de Hojas
-Aplanadora
-Guardialgodón
-Pulso Nocturno
+Rodillo de Púas
+Rizo Algodón
+Pulso Noche
 Onda Mental
-Golpe de Cola
-Huracán
-Carga de Cabeza
+Plumerazo
+Vendaval
+Ariete
 Rueda Doble
 Bomba Ígnea
 Tecno Shock
 Canto Arcaico
-Espada Secreta
+Sable Místico
 Mundo Gélido
 Ataque Fulgor
 Llama Azul
-Danza de Llamas
+Danza Llama
 Rayo Gélido
 Llama Gélida
 Alarido
-Carámbano
+Chuzos
 V de Fuego
 Llama Fusión
 Rayo Fusión
@@ -562,26 +562,26 @@ Plancha Voladora
 Escudo Tatami
 Eructo
 Fertilizante
-Red Pegajosa
+Red Viscosa
 Aguijón Letal
 Golpe Fantasma
 Halloween
 Rugido de Guerra
 Cortina Plasma
-Carga Parabólica
+Carga Parábola
 Condena Silvana
-Tormenta Pétalos
+Tormenta Floral
 Liofilización
-Voz Encantadora
+Voz Cautivadora
 Última Palabra
 Reversión
-Beso Drenador
+Beso Drenaje
 Truco Defensa
 Defensa Floral
-Campo de Césped
+Campo de Hierba
 Campo de Niebla
 Electrificación
-Juego Rudo
+Carantoña
 Viento Feérico
 Fuerza Lunar
 Estruendo
@@ -593,12 +593,12 @@ Torm. Diamantes
 Chorro de Vapor
 Paso Dimensional
 Shuriken de Agua
-Fuego Místico
+Llama Embrujada
 Barrera Espinosa
 Niebla Aromática
 Onda Anómala
 Trampa Venenosa
-Pólvora
+Polvo Explosivo
 Geocontrol
 Aura Magnética
 Paga Extra
@@ -607,25 +607,25 @@ Brillo Mágico
 Celebración
 Manos Juntas
 Ojitos Tiernos
-Frote
+Moflete Estático
 Clemencia
-Infestación
+Acoso
 Puño Incremento
-Ala del Olvido
+Ala Mortífera
 Mil Flechas
 Mil Temblores
 Fuerza Telúrica
 Luz Aniquiladora
 Pulso Primigenio
 Filo del Abismo
-Ascen. Dracónico
+Ascenso Draco
 Cerco Dimensión
 Carrera Arrolladora
 Carrera Arrolladora
 Ráfaga Demoledora
 Ráfaga Demoledora
-Picada Supersónica
-Picada Supersónica
+Picado Supersónico
+Picado Supersónico
 Diluvio Corrosivo
 Diluvio Corrosivo
 Barrena Telúrica
@@ -654,8 +654,8 @@ Dracoaliento Devastador
 Dracoaliento Devastador
 Agujero Negro Aniquilador
 Agujero Negro Aniquilador
-Tacleada Sideral
-Tacleada Sideral
+Arrumaco Sideral
+Arrumaco Sideral
 Pikavoltio Letal
 Recogearena
 Escaramuza
@@ -664,27 +664,27 @@ Puntada Sombría
 Lariat Oscuro
 Aria Burbuja
 Martillo Hielo
-Flores Sanadoras
+Cura Floral
 Fuerza Equina
 Absorbefuerza
-Cuchillada Solar
+Cuchilla Solar
 Follaje
 Foco
 Hilo Venenoso
-Agudizar
-Engranajes
-Golpe al Cuello
+Aguzar
+Piñón Auxiliar
+Golpe Mordaza
 Bola de Polen
 Anclaje
 Campo Psíquico
 Plancha
 Látigo Ígneo
-Arrogancia
+Chulería
 Llama Final
 Cambiavelocidad
 Cuerno Certero
 Purificación
-Danza Revelación
+Danza Despertar
 Núcleo Castigo
 Patada Tropical
 Mandato
@@ -702,7 +702,7 @@ Surfeo Galvánico
 Arrojo Intempestivo
 Novena Potencia
 Supernova Original
-Trampa Coraza
+Coraza Trampa
 Cañón Floral
 Psicocolmillo
 Pataleta
@@ -715,7 +715,7 @@ Meteoimpacto
 Rayo Umbrío
 Ojos Llorosos
 Electropunzada
-Ira Natural
+Furia Natural
 Multiataque
 Gigarrayo Fulminante
 Cabeza Sorpresa
@@ -724,12 +724,12 @@ Géiser Fotónico
 Fotodestrucción Apocalíptica
 Embestida Solar
 Deflagración Lunar
-Paliza Amistosa
+Somanta Amistosa
 Tempestad Rocosa
 Estruendo Implacable
 Pikaturbo
 Salpikasurf
-Pikaída
+Pikapicado
 Pikatormenta
 Vapodrenaje
 Joltioparálisis
@@ -748,7 +748,7 @@ Presa Maxilar
 Atiborramiento
 Bastión Final
 Alquitranazo
-Polvo Magia
+Polvo Mágico
 Dracoflechas
 Hora del Té
 Octopresa
@@ -768,7 +768,7 @@ Maxiciclón
 Maxiestela
 Maxidraco
 Maxionda
-Maxirroca
+Maxilito
 Maxitemblor
 Maxisombra
 Maxiflora
@@ -777,13 +777,13 @@ Estruendo Escama
 Plancha Corporal
 Decoración
 Batería Asalto
-Trampa Presión
+Cepo
 Balón Ígneo
-Corte Supremo
-Golpe Supremo
+Tajo Supremo
+Embate Supremo
 Rueda Aural
 Vasto Impacto
-Ramazo Punzante
+Punzada Rama
 Amplificador
 Ácido Málico
 Fuerza G
@@ -796,8 +796,8 @@ Asalto Estelar
 Rayo Infinito
 Metaláser
 Vasta Fuerza
-Ferroaplanadora
-Disparo Escamas
+Allanador Férreo
+Ráfaga Escamas
 Rayo Meteórico
 Moluscañón
 Bruma Explosiva
@@ -812,14 +812,14 @@ Gas Corrosivo
 Motivación
 Viraje
 Triple Axel
-Aletazo Doble
+Ala Bis
 Arenas Ardientes
-Selva Sanadora
+Cura Selvática
 Golpe Oscuro
-Golpe Torrencial
+Azote Torrencial
 Electrojaula
 Dracoenergía
-Mirada Glacial
+Mirada Heladora
 Furia Candente
 Patada Relámpago
 Lanza Glacial
@@ -832,21 +832,21 @@ Hachazo Pétreo
 Ciclón Primavera
 Poder Místico
 Erupción de Ira
-Acuatacleada
+Envite Acuático
 Clorofiláser
 Viento Carámbano
 Danza Triunfal
-Asalto Frontal
+Arremetida
 Mil Púas Tóxicas
 Ala Aural
 Rencor Reprimido
 Retracción
 Triple Flecha
 Marcha Espectral
-Corte Metralla
+Tajo Metralla
 Vendaval Gélido
 Electormenta
-Tifón de Arena
+Simún de Arena
 Plegaria Lunar
 Bálsamo Osado
 Teraexplosión
@@ -854,7 +854,7 @@ Telatrampa
 Patada Hacha
 Homenaje Póstumo
 Fotocolisión
-Emplatar
+Oído Cocina
 Puño Jet
 Extracto Picante
 Quemarrueda
@@ -862,14 +862,14 @@ Proliferación
 Pirueta Helada
 Asalto Espadón
 Plegaria Vital
-Salación
+Salazón
 Triple Inmersión
 Giro Mortífero
-Plagio
-Fileteo
+Decalcomanía
+Deslome
 Genufendiente
 Truco Floral
-Canto Ígneo
+Canto Ardiente
 Danza Acuática
 Furia Taurina
 Fiebre Dorada
@@ -879,7 +879,7 @@ Calamidad
 Nitrochoque
 Electroderrape
 Autotomía
-Respuesta Fría
+Fría Acogida
 Limpieza General
 Paisaje Nevado
 Brinco
@@ -893,7 +893,7 @@ Espada Lamento
 Electropalmas
 Martillo Colosal
 Resarcimiento
-Corte Acuático
+Tajo Acuático
 Pirochoque
 Ominochoque
 Ponzochoque
@@ -905,16 +905,16 @@ Bomba Caramelo
 Garrote Liana
 Electrorrayo
 Teraclúster
-Láser Caprichoso
+Láser Veleidoso
 Llama Protectora
 Relámpago Súbito
-Corte Potente
-Corte Taquión
+Filo Potente
+Tajo Taquión
 Prensa Metálica
 Bramido Dragón
 Canto Encantador
-Furia Ardiente
-Golpe Voltaico
+Cólera Ardiente
+Plancha Voltaica
 Psicorruido
 Palma Rauda
 Cadena Virulenta

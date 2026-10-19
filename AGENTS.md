@@ -5,8 +5,10 @@ GBA de la R36S del usuario (ArkOS) por el cable USB con anclaje. Plan y decision
 
 ## Siempre
 - **Todo en español de México**: código, comentarios, commits, textos de la app y reportes. Sin
-  spanglish. Los nombres de Pokémon, movimientos y objetos salen del motor PKHeX, que ya los
-  trae traducidos.
+  spanglish. **El motor PKHeX da los nombres en inglés**: los de Pokémon, movimientos, objetos,
+  habilidades, naturalezas y lugares se traducen por número con las tablas en español de PKHeX de
+  `android/app/src/main/assets/textos/` (ver su `ORIGEN.md` y `data/textos/`). Nunca muestres en
+  la app un nombre en inglés que venga del motor.
 - **Cada subagente trabaja en su worktree** (`~/clawd/projects/poke-r36s-companion-wt/<tarea>`,
   rama `feature/<tarea>`). Tu shell arranca en otro directorio: haz `cd` a tu worktree **en
   cada comando**. Nunca hagas commit en el árbol principal ni en otra rama.

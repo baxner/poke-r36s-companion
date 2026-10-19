@@ -6,29 +6,29 @@ Armadura Batalla
 Robustez
 Humedad
 Flexibilidad
-Velo de Arena
+Velo Arena
 Elec. Estática
-Absorbevoltios
-Absorbeagua
-Despistado
+Absorbe Elec
+Absorbe Agua
+Despiste
 Aclimatación
 Ojo Compuesto
 Insomnio
-Cambio de Color
+Cambio Color
 Inmunidad
-Absorbefuego
+Absorbe Fuego
 Polvo Escudo
 Ritmo Propio
 Ventosas
 Intimidación
 Sombra Trampa
 Piel Tosca
-Superguardia
+Superguarda
 Levitación
 Efecto Espora
 Sincronía
 Cuerpo Puro
-Curación Natural
+Cura Natural
 Pararrayos
 Dicha
 Nado Rápido
@@ -38,20 +38,20 @@ Calco
 Potencia
 Punto Tóxico
 Fuerza Mental
-Escudo de Magma
-Velo de Agua
+Escudo Magma
+Velo Agua
 Imán
-Insonorización
-Curación Pluvial
-Chorro de Arena
+Insonorizar
+Cura Lluvia
+Chorro Arena
 Presión
 Sebo
-Madrugador
-Cuerpo de Fuego
+Madrugar
+Cuerpo Llama
 Fuga
-Perspicacia
+Vista Lince
 Corte Fuerte
-Recolección
+Recogida
 Pereza
 Entusiasmo
 Gran Encanto
@@ -62,20 +62,20 @@ Viscosidad
 Mudar
 Agallas
 Escama Especial
-Toxisecreción
+Viscosecreción
 Espesura
-Mar de Llamas
+Mar Llamas
 Torrente
 Enjambre
 Cabeza Roca
 Sequía
-Trampa de Arena
+Trampa Arena
 Espíritu Vital
 Humo Blanco
 Energía Pura
 Caparazón
 Esclusa de Aire
-Tambaleo
+Tumbos
 Electromotor
 Rivalidad
 Impasible
@@ -95,29 +95,29 @@ Hidratación
 Poder Solar
 Pies Rápidos
 Normalidad
-Puntería
+Francotirador
 Muro Mágico
 Indefenso
 Rezagado
 Experto
 Defensa Hoja
-Torpeza
+Zoquete
 Rompemoldes
-Supersuerte
-Secuela
+Afortunado
+Detonación
 Anticipación
 Alerta
-Ignorancia
+Ignorante
 Cromolente
 Filtro
 Inicio Lento
 Intrépido
 Colector
-Cuerpo de Hielo
+Gélido
 Roca Sólida
 Nevada
-Cosechamiel
-Inspección
+Recogemiel
+Cacheo
 Audaz
 Multitipo
 Don Floral
@@ -127,9 +127,9 @@ Potencia Bruta
 Respondón
 Nerviosismo
 Competitivo
-Flaquear
+Flaqueza
 Cuerpo Maldito
-Alma Sanadora
+Alma Cura
 Compiescolta
 Armadura Frágil
 Metal Pesado
@@ -139,13 +139,13 @@ Multiescamas
 Ímpetu Ardiente
 Cosecha
 Telepatía
-Temperamental
+Veleta
 Funda
-Contacto Tóxico
+Toque Tóxico
 Regeneración
 Sacapecho
 Ímpetu Arena
-Piel Milagrosa
+Piel Milagro
 Cálculo Final
 Ilusión
 Impostor
@@ -156,16 +156,16 @@ Justiciero
 Cobardía
 Espejo Mágico
 Herbívoro
-Timador
-Poder Arenoso
+Bromista
+Poder Arena
 Punta Acero
-Modo Zen
+Modo Daruma
 Tinovictoria
 Turbollama
 Terravoltaje
-Velo Aromático
-Velo Florido
-Mejillas
+Velo Aroma
+Velo Flor
+Carrillo
 Mutatipo
 Pelaje Recio
 Prestidigitador
@@ -176,7 +176,7 @@ Piel Helada
 Velo Dulce
 Cambio Táctico
 Alas Vendaval
-Megalanzador
+Megadisparador
 Manto Frondoso
 Simbiosis
 Garra Dura
@@ -197,13 +197,13 @@ Hidrorrefuerzo
 Ensañamiento
 Escudo Limitado
 Vigilante
-Acuaburbuja
+Pompa
 Acero Templado
-Ira
+Cólera
 Quitanieves
 Remoto
 Voz Fluida
-Socorro
+Primer Auxilio
 Piel Eléctrica
 Cola Surf
 Banco
@@ -216,7 +216,7 @@ Regia Presencia
 Revés
 Pareja de Baile
 Batería
-Mullido
+Peluche
 Cuerpo Vívido
 Coránima
 Rizos Rebeldes
@@ -235,7 +235,7 @@ Fuerza Cerebral
 Espada Indómita
 Escudo Recio
 Líbero
-Buscabola
+Recogebolas
 Pelusa
 Hélice Caudal
 Coraza Reflejo
@@ -253,7 +253,7 @@ Antibarrera
 Alma Acerada
 Cuerpo Mortal
 Alma Errante
-Obstinación
+Monotema
 Gas Reactivo
 Velo Pastel
 Mutapetito
@@ -266,18 +266,18 @@ Relincho Blanco
 Relincho Negro
 Unidad Ecuestre
 Unidad Ecuestre
-Aroma Incesante
+Olor Persistente
 Disemillar
 Termoconversión
 Coraza Ira
 Sal Purificadora
-Pan Comido
+Cuerpo Horneado
 Surcavientos
 Perro Guardián
 Transportarrocas
 Energía Eólica
 Cambio Heroico
-Comandante
+Comandar
 Dinamo
 Paleosíntesis
 Carga Cuark
@@ -285,7 +285,7 @@ Cuerpo Áureo
 Caldero Debacle
 Espada Debacle
 Tablilla Debacle
-Cuenta Debacle
+Abalorio Debacle
 Latido Oricalco
 Motor Hadrónico
 Oportunista
