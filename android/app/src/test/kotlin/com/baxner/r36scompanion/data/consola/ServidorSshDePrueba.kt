@@ -51,6 +51,10 @@ internal class ServidorSshDePrueba(
         s.setPort(0)
         s.keyPairProvider = SimpleGeneratorHostKeyProvider(Files.createTempFile("consola-prueba-hostkey-", ".ser")).apply {
             algorithm = "EdDSA"
+            // El `KeyPairGenerator` genérico "EdDSA" de BouncyCastle (no hay net.i2p.crypto.eddsa en
+            // el classpath, solo BC) no trae una curva por default: sin esto truena con
+            // "generator not correctly initialized". 255 = Ed25519 (448 sería Ed448).
+            keySize = 255
         }
         s.passwordAuthenticator = PasswordAuthenticator { usuarioRecibido, contrasenaRecibida, _ ->
             contadorDeIntentosDeContrasena.incrementAndGet()
