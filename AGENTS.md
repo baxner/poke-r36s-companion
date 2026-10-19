@@ -36,6 +36,9 @@ GBA de la R36S del usuario (ArkOS) por el cable USB con anclaje. Plan y decision
   emulador (`connectedDebugAndroidTest`).
 - Pruebas: lo puro separado de la E/S y probado con JUnit; reloj fijo; capturas Roborazzi de cada
   pantalla nueva (revísalas como imagen).
+- Corrutinas en pruebas: lo que corre en `backgroundScope` (observadores que nunca terminan) **no**
+  avanza con `advanceUntilIdle()` si no queda nada en primer plano; usa `runCurrent()` (ver
+  `data/conexion/ConexionConConsolaTest.kt`).
 
 ## Seguridad de las partidas (no negociable)
 Ver `docs/plan.md`, "Reglas de seguridad para no perder una partida": respaldar antes de
