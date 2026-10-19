@@ -192,18 +192,32 @@ internal class SesionDeConsolaJsch(
         }
 
     /**
-     * Si un intento anterior murió a medias (la app se cerró justo entre los dos `rename` de
-     * [escribirSeguro]), [anterior] todavía existe: si [ruta] no está, el reemplazo nunca llegó a
-     * pasar y se restaura sola; si [ruta] sí está, el reemplazo ya había terminado y solo faltaba
-     * borrar [anterior]. Un [temporal] suelto de un intento que nunca llegó a los `rename` (murió
-     * subiendo o verificando) se borra: todavía no reemplaza nada.
+     * Si un intento anterior murió a medias, [anterior] todavía existe. Dos casos, y solo uno se
+     * puede resolver solo:
+     * - [ruta] **no** está: el reemplazo nunca llegó a pasar (murió subiendo, verificando el
+     *   temporal, o justo después de apartar el original pero antes de poner el temporal en su
+     *   lugar). Se restaura sola: [anterior] vuelve a ser [ruta].
+     * - [ruta] **sí** está: acá NO se puede saber desde aquí si el reemplazo ya había terminado
+     *   bien (y [anterior] es basura por borrar) o si murió más adelante, en la verificación final
+     *   de [escribirSeguro], justo en el caso donde su propio deshacer tampoco pudo completarse —
+     *   ese es exactamente el escenario que deja dicho en su mensaje de [ErrorDeConsola.VerificacionFallida]:
+     *   "el original está a salvo en [anterior]" mientras [ruta] quedó con contenido que nunca
+     *   verificó. Si aquí se asumiera "ya terminó bien" y se borrara [anterior] a ciegas, un intento
+     *   nuevo borraría la única copia buena y dejaría la que no sirve. Por eso nunca se borra: se
+     *   aparta con un nombre único (que no pisa nada, `anterior-<nanoTime>`) y se sigue — la
+     *   escritura de ahora deja [ruta] en un estado nuevo y verificado de todas formas, y lo que se
+     *   apartó queda ahí para revisarlo luego a mano (por ejemplo con [listar]).
+     *
+     * Un [temporal] suelto de un intento que nunca llegó a los `rename` se borra: todavía no
+     * reemplaza nada, no hay nada que perder.
      */
     private fun repararIntentoPrevio(ruta: String, anterior: String, temporal: String) {
         if (attrsOCrudo(anterior) != null) {
             if (attrsOCrudo(ruta) == null) {
                 runCatching { sftp.rename(anterior, ruta) }
             } else {
-                eliminarSiExiste(anterior)
+                val apartado = "$anterior-${System.nanoTime()}"
+                if (attrsOCrudo(apartado) == null) runCatching { sftp.rename(anterior, apartado) }
             }
         }
         eliminarSiExiste(temporal)

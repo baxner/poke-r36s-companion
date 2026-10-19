@@ -116,6 +116,27 @@ class SesionDeConsolaJschTest {
     }
 
     @Test
+    fun `si queda un -prev bueno junto a una ruta corrupta de un intento anterior, no se pierde el bueno`() = abrirSesion { sesion, raiz ->
+        // Lo que deja un escribirSeguro que murió en la verificación final sin poder deshacerse
+        // (ver el KDoc de SesionDeConsolaJsch.repararIntentoPrevio): el original bueno apartado en
+        // "-prev" y la ruta con contenido que nunca llegó a verificar.
+        File(raiz, "partida.srm").writeBytes("contenido-corrupto-sin-verificar".toByteArray())
+        File(raiz, "partida.srm.pr36c-prev").writeBytes("contenido-bueno-original".toByteArray())
+
+        sesion.escribirSeguro("/partida.srm", "contenido-nuevo-verificado".toByteArray())
+
+        // La escritura de ahora quedó bien puesta y verificada.
+        assertArrayEquals("contenido-nuevo-verificado".toByteArray(), File(raiz, "partida.srm").readBytes())
+        // El "-prev" de antes no se pudo borrar a ciegas (no se sabía si era la única copia buena):
+        // se apartó con otro nombre en vez de perderse o pisarse.
+        assertFalse(File(raiz, "partida.srm.pr36c-prev").exists())
+        val apartados = raiz.listFiles { archivo -> archivo.name.startsWith("partida.srm.pr36c-prev-") }.orEmpty()
+        assertEquals(1, apartados.size)
+        assertArrayEquals("contenido-bueno-original".toByteArray(), apartados.single().readBytes())
+        assertSinTemporales(raiz, "partida.srm")
+    }
+
+    @Test
     fun `escribirSeguro manda sync con la ruta escapada, aunque el nombre sea raro`() {
         val comandos = FabricaDeComandosFalsa()
         abrirSesion(comandos = comandos) { sesion, raiz ->
