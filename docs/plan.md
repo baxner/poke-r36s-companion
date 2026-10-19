@@ -209,6 +209,39 @@ nube. La app solo se conecta a direcciones privadas (la consola).
   muestras locales.
 - APK debug: 31.5 MB con el motor (comprimido).
 
+### Diseño técnico de las fases 3 a 5 (revisado contra el motor real, 2026-10-19)
+
+- **Editor (fase 3):** el motor edita por borrador: `pokemon.edit(at)` → `pokemon.update(at, patch)`
+  (especie, nivel, naturaleza, shiny, IVs/EVs, movimientos, objeto, Poké Ball, mote…) →
+  `pokemon.commit()`. `pokemon.details(at)` trae todo el Pokémon con su `legality`
+  (`valid` + mensajes) y `pokemon.options(at)` las opciones válidas para ese juego. Mochila:
+  `inventory.get`/`setItem`. Entrenador: `trainer.setMoney`, `setName`, `setBadges`.
+- **Intercambio rápido (fase 4):** el motor trae intercambio entre dos partidas:
+  `transfer.open(otra)` → `transfer.preview(oferta)` (qué cambia en cada Pokémon y en cada
+  partida, cuáles rechaza el juego y la legalidad en el juego de destino) → `transfer.commit`,
+  que devuelve **las dos partidas** exportadas. Las llegadas aceptan un `patch`: así se hace la
+  **evolución por intercambio** (Kadabra → Alakazam; Seadra con Escama Dragón → Kingdra, gastando
+  el objeto), con una tabla propia de evoluciones por intercambio y el motor juzgando la legalidad.
+  Las dos partidas se escriben con el `EscritorDePartidas` (cada una con su respaldo y su estado
+  automático apartado).
+- **Banco (fase 4):** sacar un Pokémon = `pokemon.export(at)` (sus bytes exactos, `.pk3`) y vaciar
+  la casilla. El motor no tiene "soltar"; la casilla se vacía con `PartidaGen3.conCasillaVacia`
+  (sus 80 bytes en cero y las sumas recalculadas). **Probado con el Rojo Fuego real:** al vaciar
+  la caja 1 casilla 1 cambian 79 bytes y, según el motor, solo falta ese Spearow; los otros 76
+  Pokémon de las cajas, el equipo, el entrenador y la mochila quedan idénticos. Siempre se
+  vuelve a cargar la partida en el motor para comprobarlo antes de escribirla. Meter un
+  Pokémon = `box.previewFile` (legalidad y conversión) → `box.addFromFile`. En la v1 solo se
+  deposita desde las cajas (no desde el equipo).
+- **Pokédex global (fase 4):** `PartidaGen3.pokedex()` da las especies atrapadas y vistas de
+  cada partida (coincide con los conteos del motor); "dónde está cada una" sale de `box.get` y
+  `party.get`; "dónde atraparla" de `encounters.search(versión, especie)`.
+- **Eventos (extra):** `events.get().gen3` dice qué boletos faltan y `events.giveTickets` los
+  agrega (el Mapa Viejo solo se repartió en Japón: el motor pide confirmarlo aparte).
+- **Intercambio real (fase 5):** mGBA (MPL 2.0) trae el cable link entre varios núcleos en un
+  mismo proceso (`GBASIOLockstepCoordinator` en la rama principal; la 0.10.5 estable usa la API
+  anterior `GBASIOLockstep`). Se compila con el NDK y una capa JNI propia: dos núcleos, cada
+  uno en su hilo, unidos por el coordinador.
+
 Reparto igual que en Vigía: Opus diseña, revisa e integra; Sonnet implementa módulos bien
 especificados; Haiku solo tareas mecánicas. Máximo dos subagentes a la vez, cada uno en su
 worktree. Los nombres de Pokémon, movimientos y objetos en español salen del propio PKHeX, que
