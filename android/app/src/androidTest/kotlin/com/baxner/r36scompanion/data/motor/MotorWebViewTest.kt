@@ -27,10 +27,10 @@ class MotorWebViewTest {
         val ms = motor.arrancar()
         Log.i(Etiqueta, "motor listo en $ms ms")
         val rojoFuego = partidas.versionesEnBlanco().first { it.name.contains("FireRed", ignoreCase = true) }
-        val bytes = partidas.partidaEnBlanco(rojoFuego.id)
-        assertEquals(131_072, bytes.size)
-        val resumen = partidas.conPartida(bytes, "blanco.sav") { resumen() }
+        val resumen = partidas.conPartidaEnBlanco(rojoFuego.id) { resumen() }
         assertEquals(3, resumen.partida.generation)
+        assertEquals("FireRed", resumen.partida.version)
+        assertTrue(resumen.equipo.isEmpty())
     }
 
     @Test

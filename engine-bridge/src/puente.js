@@ -3,7 +3,7 @@
 // (WebViewCompat.addWebMessageListener) y recibe {id, ok, resultado} o {id, ok: false, error}.
 //
 // Los bytes viajan como {"$bytes": "<base64>"} en los dos sentidos, a cualquier profundidad.
-// El runtime de .NET se carga de los archivos de la app (_framework/, junto a esta página):
+// El runtime de .NET se carga de los archivos de la app (runtime/, junto a esta página):
 // nunca del CDN de jsDelivr, que es lo que el paquete haría por defecto.
 import { createEngine, wasmHost } from '@pkhex-everywhere/engine';
 
@@ -13,7 +13,7 @@ const enviar = (mensaje) => canal.postMessage(JSON.stringify(mensaje));
 // `plugins` descarga y ejecuta código de terceros: aquí nunca.
 const ESPACIOS_BLOQUEADOS = new Set(['plugins']);
 
-const dotnetUrl = new URL('_framework/dotnet.js', document.baseURI).href;
+const dotnetUrl = new URL('runtime/dotnet.js', document.baseURI).href;
 const motor = createEngine({ host: wasmHost({ dotnetUrl }) });
 
 function base64DeBytes(bytes) {

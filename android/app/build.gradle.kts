@@ -41,11 +41,6 @@ android {
         compose = true
     }
 
-    // El motor PKHeX (assets/motor/, lo genera scripts/build-motor.sh) son ~28 MB de .wasm y
-    // .dat: sin comprimir dentro del APK para que el WebView los lea directo, como el CDN.
-    androidResources {
-        noCompress += listOf("wasm", "dat")
-    }
 
     testOptions {
         unitTests {

@@ -37,11 +37,16 @@ class MotorPartidas(private val motor: Motor) {
         motor.llamar("game.blankVersions").como(ListSerializer(VersionDto.serializer()))
     }
 
-    /** Crea una partida en blanco de [versionId] y devuelve sus bytes (útil en pruebas). */
-    suspend fun partidaEnBlanco(versionId: Int): ByteArray = turno.withLock {
+    /**
+     * Crea en memoria una partida en blanco de [versionId] y corre [bloque] con ella (útil en
+     * pruebas, sin partidas reales). Ojo: el motor 0.26.0 no exporta las partidas en blanco de la
+     * 3.ª generación (`Arg_ArgumentOutOfRangeException` en `game.export`, también en Node); las
+     * partidas reales sí se exportan.
+     */
+    suspend fun <T> conPartidaEnBlanco(versionId: Int, bloque: suspend SesionDePartida.() -> T): T = turno.withLock {
         motor.llamar("game.loadBlank", Puente.numero(versionId))
         try {
-            Puente.bytesDe(motor.llamar("game.export").jsonObject.getValue("bytes"))
+            SesionDePartida(motor).bloque()
         } finally {
             runCatching { motor.llamar("game.close") }
         }

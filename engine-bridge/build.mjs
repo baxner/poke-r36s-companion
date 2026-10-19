@@ -1,5 +1,7 @@
 // Genera android/app/src/main/assets/motor/: la página del puente, su JS empaquetado, el
-// runtime de .NET con PKHeX.Core (_framework/) y los avisos de licencia del motor.
+// runtime de .NET con PKHeX.Core (runtime/) y los avisos de licencia del motor.
+// El runtime va en runtime/ y no en _framework/ como en el paquete: Android descarta del APK las
+// carpetas de assets que empiezan con guion bajo (patrón de AAPT "<dir>_*").
 import { build } from 'esbuild';
 import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -22,7 +24,7 @@ await build({
   logLevel: 'warning',
 });
 
-cpSync(join(paquete, '_framework'), join(salida, '_framework'), { recursive: true });
+cpSync(join(paquete, '_framework'), join(salida, 'runtime'), { recursive: true });
 cpSync(join(paquete, 'notices.json'), join(salida, 'notices.json'));
 writeFileSync(
   join(salida, 'index.html'),

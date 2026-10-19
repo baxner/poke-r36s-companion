@@ -194,6 +194,21 @@ nube. La app solo se conecta a direcciones privadas (la consola).
 - **Consecuencia para la fase 2:** respaldar también los estados (`.state`, `.state1`,
   `.state.auto`), porque para algunos juegos son la única copia del avance.
 
+### Fase 1: el motor dentro de Android (2026-10-19)
+
+- **Funciona.** En el emulador (Android 14, WebView 113, sin GPU real) el motor arranca en 6-9 s,
+  lee el Rojo Fuego real del usuario completo y **lo exporta idéntico byte por byte**; un archivo
+  que no es partida da `invalid-save`. Pruebas: `MotorWebViewTest` (en el emulador) y
+  `PoliticaDeRedTest` (JVM).
+- **Trampa encontrada:** Android descarta del APK las carpetas de `assets/` que empiezan con `_`
+  (patrón de AAPT `<dir>_*`), así que el runtime va en `assets/motor/runtime/` y no en
+  `_framework/` como en el paquete.
+- **El motor 0.26.0 no exporta partidas en blanco de la 3.ª generación**
+  (`Arg_ArgumentOutOfRangeException` en `game.export`, también en Node). Las pruebas versionadas
+  usan la partida en blanco solo en memoria (`conPartidaEnBlanco`); las de exportar usan las
+  muestras locales.
+- APK debug: 31.5 MB con el motor (comprimido).
+
 Reparto igual que en Vigía: Opus diseña, revisa e integra; Sonnet implementa módulos bien
 especificados; Haiku solo tareas mecánicas. Máximo dos subagentes a la vez, cada uno en su
 worktree. Los nombres de Pokémon, movimientos y objetos en español salen del propio PKHeX, que
