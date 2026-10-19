@@ -1,0 +1,16 @@
+{
+  "name": "motor-puente",
+  "private": true,
+  "type": "module",
+  "description": "Puente entre la app Android y el motor PKHeX (@pkhex-everywhere/engine). Ver docs/plan.md, 'Motor PKHeX'.",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@pkhex-everywhere/engine": "0.26.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

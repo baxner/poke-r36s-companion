@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema base solo para la ventana; los colores de verdad los pone Compose (ui/theme/). -->
+    <style name="Theme.Companion" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#0E1116</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

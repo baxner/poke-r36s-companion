@@ -1,0 +1,14 @@
+# Partidas reales del usuario: nunca al repo (ver AGENTS.md).
+muestras/
+android/app/src/androidTest/assets/muestras/
+
+# Generado por scripts/build-motor.sh (28 MB, sale del paquete npm fijado en engine-bridge/).
+android/app/src/main/assets/motor/
+engine-bridge/node_modules/
+
+android/local.properties
+android/.gradle/
+android/.kotlin/
+android/build/
+android/app/build/
+.DS_Store
