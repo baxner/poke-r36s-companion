@@ -144,11 +144,13 @@ internal class SesionDeConsolaJsch(
     }
 
     override suspend fun ajustesRetroArch(): List<AjustesRetroArch> = withContext(Dispatchers.IO) {
-        val home = homeDelUsuario()
-        listOfNotNull(
-            leerAjustesSiExiste("${home.trimEnd('/')}/.config/retroarch/retroarch.cfg", home),
-            leerAjustesSiExiste("${home.trimEnd('/')}/.config/retroarch32/retroarch.cfg", home),
-        )
+        val home = homeDelUsuario() // exec en un canal aparte: no toca `sftp`, no necesita `turno`.
+        turno.withLock {
+            listOfNotNull(
+                leerAjustesSiExiste("${home.trimEnd('/')}/.config/retroarch/retroarch.cfg", home),
+                leerAjustesSiExiste("${home.trimEnd('/')}/.config/retroarch32/retroarch.cfg", home),
+            )
+        }
     }
 
     override fun close() {
