@@ -20,6 +20,15 @@ class Textos(private val abrir: (String) -> InputStream) {
     private val juegos by lazy { tabla("juegos.txt") }
     private val lugaresGen3 by lazy { tabla("lugares-gen3.txt") }
 
+    /** Nombre en inglés de un lugar de la 3.ª generación → su id (la tabla en inglés está alineada con la española). */
+    private val idsDeLugaresGen3EnIngles: Map<String, Int> by lazy {
+        abrir("textos/en/lugares-gen3.txt").bufferedReader(Charsets.UTF_8).use { it.readLines() }
+            .withIndex()
+            .filter { it.value.isNotBlank() }
+            .groupBy({ it.value.trim() }, { it.index })
+            .mapValues { (_, ids) -> ids.first() }
+    }
+
     /** Por número de la Pokédex Nacional (1 = Bulbasaur). */
     fun especie(id: Int): String? = especies.nombre(id).takeIf { id > 0 }
 
@@ -44,6 +53,13 @@ class Textos(private val abrir: (String) -> InputStream) {
     fun juego(versionEnIngles: String): String = VersionesGen3[versionEnIngles]?.let(::juego) ?: versionEnIngles
 
     fun lugarGen3(id: Int): String? = lugaresGen3.nombre(id)
+
+    /**
+     * Un lugar de la 3.ª generación a partir de su nombre en inglés, como lo da `encounters.search`
+     * del motor ("Route 1" → "Ruta 1", "Safari Zone (Kanto)" → su nombre en español). null si no
+     * está en la tabla.
+     */
+    fun lugarGen3DesdeIngles(nombre: String): String? = idsDeLugaresGen3EnIngles[nombre.trim()]?.let(::lugarGen3)
 
     private fun tabla(archivo: String) = Tabla(abrir("textos/es/$archivo").bufferedReader(Charsets.UTF_8).use { it.readLines() })
 

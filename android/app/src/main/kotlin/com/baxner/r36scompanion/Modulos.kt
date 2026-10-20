@@ -83,5 +83,5 @@ class Modulos(context: Context) {
     val editorDePartidas: EditorDePartidas = EditorDePartidasConMotor(motorPartidas)
     val intercambios: Intercambios = IntercambiosConMotor(motorPartidas)
     val ejecutorDeIntercambio: EjecutorDeIntercambio = EjecutorDeIntercambioConEscritor(escritorDePartidas)
-    val pokedexGlobal: PokedexGlobal = PokedexGlobalConRespaldos(repositorioDeRespaldos, banco, motorPartidas)
+    val pokedexGlobal: PokedexGlobal = PokedexGlobalConRespaldos(repositorioDeRespaldos, banco, motorPartidas, textos::lugarGen3DesdeIngles)
 }

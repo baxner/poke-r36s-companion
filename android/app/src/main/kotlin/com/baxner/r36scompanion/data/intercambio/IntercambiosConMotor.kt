@@ -9,6 +9,7 @@ import com.baxner.r36scompanion.data.editor.aHandleDto
 import com.baxner.r36scompanion.data.editor.aLegalidad
 import com.baxner.r36scompanion.data.editor.aResumenDePokemon
 import com.baxner.r36scompanion.data.motor.MotorPartidas
+import com.baxner.r36scompanion.data.textos.TextosDelMotor
 import com.baxner.r36scompanion.data.motor.Puente
 import com.baxner.r36scompanion.data.motor.SesionDePartida
 import kotlinx.serialization.json.JsonElement
@@ -102,12 +103,12 @@ class IntercambiosConMotor(private val motorPartidas: MotorPartidas) : Intercamb
                 sale = ofrecido.from.aResumenDePokemon(),
                 llega = ofrecido.arrives.aResumenDePokemon(),
                 evolucion = evoluciones[direccion to casillaOrigen],
-                cambios = ofrecido.changes.map { it.aTexto() },
-                cambiosEnPartidas = ofrecido.saveChanges.map { it.aTexto() },
+                cambios = ofrecido.changes.map { TextosDelMotor.campoQueCambia(it.field) }.distinct(),
+                cambiosEnPartidas = ofrecido.saveChanges.map { TextosDelMotor.cambioEnPartida(it.kind) }.distinct(),
                 legalidad = ofrecido.legality.aLegalidad(),
             )
         }
-        val rechazos = preview.refused.map { Rechazo(direccion = it.direction.aDireccion(), casilla = it.at.aCasilla(), motivo = it.reason) }
+        val rechazos = preview.refused.map { Rechazo(direccion = it.direction.aDireccion(), casilla = it.at.aCasilla(), motivo = TextosDelMotor.rechazo(it.reason)) }
         return VistaPreviaDeIntercambio(llegadas = llegadas, rechazos = rechazos)
     }
 }

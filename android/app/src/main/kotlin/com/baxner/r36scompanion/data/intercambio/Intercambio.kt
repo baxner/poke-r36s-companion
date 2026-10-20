@@ -45,14 +45,15 @@ data class LlegadaPrevista(
     /** Cómo llega (con la especie ya evolucionada si toca). */
     val llega: ResumenDePokemon,
     val evolucion: EvolucionesPorIntercambio.Evolucion?,
-    /** Lo que cambia en el Pokémon, del motor (en inglés: la pantalla lo resume). */
+    /** Lo que cambia en el Pokémon, ya en español (`TextosDelMotor.campoQueCambia`). */
     val cambios: List<String>,
-    /** Lo que cambia en las partidas (Pokédex, objetos devueltos, eventos), del motor. */
+    /** Lo que cambia en las partidas (Pokédex, objetos devueltos, eventos), ya en español (`TextosDelMotor.cambioEnPartida`). */
     val cambiosEnPartidas: List<String>,
     /** La revisión de legalidad en el juego de destino. */
     val legalidad: Legalidad,
 )
 
+/** [motivo] ya en español (`TextosDelMotor.rechazo`). */
 data class Rechazo(val direccion: Direccion, val casilla: Casilla, val motivo: String)
 
 data class VistaPreviaDeIntercambio(val llegadas: List<LlegadaPrevista>, val rechazos: List<Rechazo>) {

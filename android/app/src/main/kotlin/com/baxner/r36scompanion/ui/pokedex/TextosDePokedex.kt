@@ -9,7 +9,7 @@ import com.baxner.r36scompanion.data.textos.Textos
 
 /*
  * Textos del detalle de una especie (ver el encargo, punto 2): dónde está cada ejemplar y dónde
- * atraparla. Puras: se prueban sin Android. `lugar` y `niveles` de [DondeAtrapar] vienen en
+ * atraparla. Puras: se prueban sin Android. `lugar` y `forma` de [DondeAtrapar] ya vienen en español (antes venían en
  * inglés del propio motor (ver el KDoc de `PokedexGlobal.kt`: no hay una tabla de `Textos` para
  * nombres de lugar de `encounters.search`, a diferencia de `lugarGen3` que traduce por id el
  * "lugar de captura" ya grabado en un Pokémon); se muestran tal cual, como etiqueta técnica.
@@ -43,8 +43,11 @@ private fun esShinyDe(ubicacion: Ubicacion): Boolean = when (ubicacion) {
     is Ubicacion.EnBanco -> ubicacion.esShiny
 }
 
-/** "Pokemon Edicion Rojo Fuego: Viridian Forest (niveles 3-5)" o "… por huevo (Day Care)". */
+/** "Rojo Fuego: Bosque Verde, en la hierba (Nv 3-5)" o "Rojo Fuego: por crianza (de un huevo)". */
 fun DondeAtrapar.aTexto(juegos: Map<Long, JuegoRespaldado>, textos: Textos): String {
     val nombreJuego = juegos[juegoId]?.nombreParaMostrar(textos) ?: textos.juego(versionId) ?: "un juego"
-    return if (esHuevo) "$nombreJuego: por huevo ($lugar)" else "$nombreJuego: $lugar (niveles $niveles)"
+    if (esHuevo) return "$nombreJuego: por crianza (de un huevo)"
+    val comoSeAtrapa = forma?.let { ", ${it.replaceFirstChar(Char::lowercase)}" }.orEmpty()
+    val enQueNivel = if (niveles.isBlank()) "" else " (Nv $niveles)"
+    return "$nombreJuego: $lugar$comoSeAtrapa$enQueNivel"
 }

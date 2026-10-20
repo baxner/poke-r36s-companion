@@ -73,15 +73,16 @@ class TextosDePokedexTest {
 
     @Test
     fun `DondeAtrapar normal muestra lugar y niveles`() {
-        val lugar = DondeAtrapar(juegoId = 1, versionId = 4, lugar = "Viridian Forest", niveles = "3-5", esHuevo = false)
+        // Los lugares ya llegan en español y agrupados (ver agruparEncuentros).
+        val lugar = DondeAtrapar(juegoId = 1, versionId = 4, lugar = "Bosque Verde", niveles = "3-5", esHuevo = false, forma = "En la hierba")
 
-        assertEquals("Rojo Fuego: Viridian Forest (niveles 3-5)", lugar.aTexto(mapOf(1L to rojoFuego), textos))
+        assertEquals("Rojo Fuego: Bosque Verde, en la hierba (Nv 3-5)", lugar.aTexto(mapOf(1L to rojoFuego), textos))
     }
 
     @Test
     fun `DondeAtrapar por huevo lo dice`() {
-        val lugar = DondeAtrapar(juegoId = 1, versionId = 4, lugar = "Day Care", niveles = "—", esHuevo = true)
+        val lugar = DondeAtrapar(juegoId = 1, versionId = 4, lugar = "", niveles = "", esHuevo = true)
 
-        assertEquals("Rojo Fuego: por huevo (Day Care)", lugar.aTexto(mapOf(1L to rojoFuego), textos))
+        assertEquals("Rojo Fuego: por crianza (de un huevo)", lugar.aTexto(mapOf(1L to rojoFuego), textos))
     }
 }

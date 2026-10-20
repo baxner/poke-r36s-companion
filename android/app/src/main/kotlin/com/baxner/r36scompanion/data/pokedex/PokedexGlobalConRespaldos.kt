@@ -27,6 +27,8 @@ class PokedexGlobalConRespaldos(
     private val repositorio: RepositorioDeRespaldos,
     private val banco: Banco,
     private val motorPartidas: MotorPartidas,
+    /** El motor da los lugares en inglés: `Textos::lugarGen3DesdeIngles` en la app. */
+    private val traducirLugar: (String) -> String? = { null },
 ) : PokedexGlobal {
 
     override suspend fun entradas(): List<EntradaDePokedex> {
@@ -74,7 +76,7 @@ class PokedexGlobalConRespaldos(
                     val version = llamar("game.version").let { if (it == JsonNull) null else it.decodificar(SaveVersionDto.serializer()) } ?: return@conPartida emptyList()
                     llamar("encounters.search", Puente.numero(version.versionId), Puente.numero(especie))
                         .decodificar(ListSerializer(EncounterRowDto.serializer()))
-                        .map { fila -> DondeAtrapar(juegoId = juego.id, versionId = version.versionId, lugar = fila.location, niveles = fila.levelRange, esHuevo = fila.isEgg) }
+                        .let { filas -> agruparEncuentros(filas, juego.id, version.versionId, traducirLugar) }
                 }
             } catch (e: MotorException) {
                 emptyList() // esta partida no soporta `encounters` (SaveCapability): no sale por ninguno de sus juegos.

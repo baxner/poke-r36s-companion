@@ -90,7 +90,7 @@ class IntercambiosConMotorTest {
         assertTrue(vista.llegadas.isEmpty())
         val rechazo = vista.rechazos.single()
         assertEquals(Direccion.DE_A_HACIA_B, rechazo.direccion)
-        assertEquals("speciesNotInGame", rechazo.motivo)
+        assertEquals("el motivo llega ya en español", "Esa especie no existe en el juego de destino", rechazo.motivo)
         assertFalse(vista.sePuede)
     }
 }

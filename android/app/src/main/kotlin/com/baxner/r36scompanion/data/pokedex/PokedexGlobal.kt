@@ -33,8 +33,20 @@ data class EntradaDePokedex(
     val registrada: Boolean get() = atrapadaEn.isNotEmpty()
 }
 
-/** Un lugar donde se puede atrapar, de `encounters.search` (lugar y nivel vienen en inglés del motor). */
-data class DondeAtrapar(val juegoId: Long, val versionId: Int, val lugar: String, val niveles: String, val esHuevo: Boolean)
+/**
+ * Un lugar donde se puede atrapar, de `encounters.search`, ya en español y agrupado: un renglón por
+ * lugar y forma de encuentro, con el rango de niveles juntado ("2-5"). La crianza va en un renglón
+ * propio por juego con [esHuevo] (sin lugar ni niveles: no es un lugar del mapa).
+ */
+data class DondeAtrapar(
+    val juegoId: Long,
+    val versionId: Int,
+    val lugar: String,
+    val niveles: String,
+    val esHuevo: Boolean,
+    /** "En la hierba", "Pescando con la Supercaña", "Encuentro fijo o regalo"… null para la crianza. */
+    val forma: String? = null,
+)
 
 data class ResumenDePokedex(val total: Int, val registradas: Int, val tenidas: Int, val vistas: Int)
 
