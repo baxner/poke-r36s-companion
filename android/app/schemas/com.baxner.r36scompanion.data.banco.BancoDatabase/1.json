@@ -1,0 +1,123 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "3d140160974f49635a8d22e8fca718a3",
+    "entities": [
+      {
+        "tableName": "pokemon_banco",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bytes` BLOB NOT NULL, `especie` INTEGER, `nivel` INTEGER NOT NULL, `mote` TEXT NOT NULL, `esShiny` INTEGER NOT NULL, `esHuevo` INTEGER NOT NULL, `entrenadorOriginal` TEXT NOT NULL, `idDeEntrenador` INTEGER NOT NULL, `versionDeOrigen` INTEGER NOT NULL, `legalidadJson` TEXT, `estado` TEXT NOT NULL, `juegoDeOrigen` INTEGER, `casillaDeOrigenJson` TEXT, `depositadoEn` INTEGER NOT NULL, `caja` INTEGER NOT NULL, `posicion` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bytes",
+            "columnName": "bytes",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "especie",
+            "columnName": "especie",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "nivel",
+            "columnName": "nivel",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mote",
+            "columnName": "mote",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "esShiny",
+            "columnName": "esShiny",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "esHuevo",
+            "columnName": "esHuevo",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entrenadorOriginal",
+            "columnName": "entrenadorOriginal",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idDeEntrenador",
+            "columnName": "idDeEntrenador",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "versionDeOrigen",
+            "columnName": "versionDeOrigen",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "legalidadJson",
+            "columnName": "legalidadJson",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "estado",
+            "columnName": "estado",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "juegoDeOrigen",
+            "columnName": "juegoDeOrigen",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "casillaDeOrigenJson",
+            "columnName": "casillaDeOrigenJson",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "depositadoEn",
+            "columnName": "depositadoEn",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caja",
+            "columnName": "caja",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "posicion",
+            "columnName": "posicion",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3d140160974f49635a8d22e8fca718a3')"
+    ]
+  }
+}
