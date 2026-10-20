@@ -48,7 +48,7 @@ fun EquipoTabContent(
         return
     }
     LazyColumn(modifier = modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        items(equipo.orEmpty(), key = { it.casilla }) { pokemon ->
+        items(equipo.orEmpty(), key = { "${it.casilla.origen}-${it.casilla.posicion}-${it.casilla.caja}" }) { pokemon ->
             FilaDePokemonEditable(
                 pokemon = pokemon,
                 textos = textos,

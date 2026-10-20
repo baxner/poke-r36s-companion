@@ -40,7 +40,12 @@ fun InsigniaDeLegalidad(legalidad: Legalidad?, modifier: Modifier = Modifier) {
     }
 }
 
-/** Una fila del equipo en el editor: sprite, mote/especie, nivel e insignia de legalidad (ver el encargo de esta fase, punto 5). */
+/**
+ * Una fila del equipo en el editor: sprite, mote/especie, nivel e insignia de legalidad (ver el
+ * encargo de esta fase, punto 5). La insignia va en su propia línea, dentro de la columna con
+ * `weight`: un motivo largo ("el nivel no cuadra con su especie y origen") no cabe junto al mote
+ * en una sola fila sin aplastarlo (se vio en la primera captura: el mote desaparecía).
+ */
 @Composable
 fun FilaDePokemonEditable(pokemon: ResumenDePokemon, textos: Textos, legalidad: Legalidad?, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val nombreDeEspecie = pokemon.especie?.let(textos::especie) ?: "?"
@@ -51,13 +56,15 @@ fun FilaDePokemonEditable(pokemon: ResumenDePokemon, textos: Textos, legalidad: 
     ) {
         SpriteGrande(especieId = pokemon.especie, shiny = pokemon.esShiny, tamano = 48.dp, contentDescription = nombreDeEspecie)
         Column(modifier = Modifier.weight(1f)) {
-            Text(pokemon.mote, style = MaterialTheme.typography.bodyLarge, color = CompanionColors.TextPrimary, maxLines = 1)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(pokemon.mote, style = MaterialTheme.typography.bodyLarge, color = CompanionColors.TextPrimary, maxLines = 1, modifier = Modifier.weight(1f, fill = false))
+                Text("Nv ${pokemon.nivel}", style = MaterialTheme.typography.bodyMedium, color = CompanionColors.TextSecondary)
+            }
             if (!esMoteDeEspecie(pokemon.mote, nombreDeEspecie)) {
                 Text(nombreDeEspecie, style = MaterialTheme.typography.bodySmall, color = CompanionColors.TextSecondary, maxLines = 1)
             }
+            InsigniaDeLegalidad(legalidad, modifier = Modifier.padding(top = 2.dp))
         }
-        Text("Nv ${pokemon.nivel}", style = MaterialTheme.typography.bodyMedium, color = CompanionColors.TextSecondary)
-        InsigniaDeLegalidad(legalidad)
     }
 }
 
