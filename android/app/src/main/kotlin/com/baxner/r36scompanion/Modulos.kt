@@ -10,6 +10,8 @@ import com.baxner.r36scompanion.data.consola.BuscadorDeConsola
 import com.baxner.r36scompanion.data.consola.BuscadorPorAnclaje
 import com.baxner.r36scompanion.data.consola.ConectorDeConsola
 import com.baxner.r36scompanion.data.consola.ConectorDeConsolaJsch
+import com.baxner.r36scompanion.data.editor.EditorDePartidas
+import com.baxner.r36scompanion.data.editor.EditorDePartidasConMotor
 import com.baxner.r36scompanion.data.motor.MotorPartidas
 import com.baxner.r36scompanion.data.motor.MotorWebView
 import com.baxner.r36scompanion.data.preferencias.PreferenciasDeLaApp
@@ -65,4 +67,7 @@ class Modulos(context: Context) {
 
     val repositorioDeRespaldos: RepositorioDeRespaldos = RepositorioDeRespaldosImpl(db, almacenDeBlobs, lectorDeResumen, reloj)
     val escritorDePartidas: EscritorDePartidas = EscritorDePartidasImpl(db, almacenDeBlobs, lectorDeResumen, reloj)
+
+    /** El editor (fase 3): una [com.baxner.r36scompanion.data.editor.SesionDeEdicion] por juego abierto, nunca compartida entre pantallas de distintos juegos. */
+    val editorDePartidas: EditorDePartidas = EditorDePartidasConMotor(motorPartidas)
 }

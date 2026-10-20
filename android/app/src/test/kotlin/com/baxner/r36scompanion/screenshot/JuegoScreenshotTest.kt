@@ -44,6 +44,7 @@ class JuegoScreenshotTest {
                     uiState = uiState,
                     textos = textos,
                     versionAConfirmar = versionAConfirmar,
+                    onEditar = {},
                     onPedirRestaurar = {},
                     onConfirmarRestaurar = {},
                     onCancelarRestaurar = {},
