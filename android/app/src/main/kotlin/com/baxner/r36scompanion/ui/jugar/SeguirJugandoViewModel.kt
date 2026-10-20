@@ -1,5 +1,8 @@
 package com.baxner.r36scompanion.ui.jugar
 
+import com.baxner.r36scompanion.data.respaldos.juegoPorNombreDeArchivo
+import com.baxner.r36scompanion.ui.juego.nombreDeJuego
+import com.baxner.r36scompanion.data.textos.Textos
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baxner.r36scompanion.data.consola.SesionDeConsola
@@ -96,6 +99,8 @@ class SeguirJugandoViewModel(
     private val alcanceDeLaApp: CoroutineScope,
     regresarAlAbrir: Boolean = false,
     private val reloj: Reloj = Reloj { System.currentTimeMillis() },
+    /** Para el nombre a mostrar ("Rojo Fuego"); sin él, se deduce del nombre del archivo. */
+    private val textos: Textos? = null,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SeguirJugandoUiState())
     val uiState: StateFlow<SeguirJugandoUiState> = _uiState.asStateFlow()
@@ -114,7 +119,9 @@ class SeguirJugandoViewModel(
     init {
         viewModelScope.launch {
             val juego = repositorio.juegos().first().firstOrNull { it.id == juegoId }
-            _uiState.update { it.copy(nombreDeJuego = juego?.nombre.orEmpty()) }
+            _uiState.update {
+                it.copy(nombreDeJuego = juego?.let { j -> textos?.let { t -> nombreDeJuego(j, t) } ?: juegoPorNombreDeArchivo(j.nombre) ?: j.nombre }.orEmpty())
+            }
             when {
                 regresarAlAbrir -> {
                     val sesionActual = sesion.value

@@ -1,5 +1,6 @@
 package com.baxner.r36scompanion.ui.jugar
 
+import com.baxner.r36scompanion.ui.juego.nombreDeJuego
 import android.view.Surface
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -119,7 +120,9 @@ class IntercambioRealViewModel(
             val juegos = repositorio.juegos().first()
             val juegoAInfo = juegos.firstOrNull { it.id == juegoA }
             val juegoBInfo = juegos.firstOrNull { it.id == juegoB }
-            _uiState.update { it.copy(nombreA = juegoAInfo?.nombre.orEmpty(), nombreB = juegoBInfo?.nombre.orEmpty()) }
+            _uiState.update {
+                it.copy(nombreA = juegoAInfo?.let { j -> nombreDeJuego(j, textos) }.orEmpty(), nombreB = juegoBInfo?.let { j -> nombreDeJuego(j, textos) }.orEmpty())
+            }
             if (juegoAInfo == null || juegoBInfo == null) {
                 _uiState.update { it.copy(etapa = EtapaDeIntercambioReal.FALTA_CONSOLA) }
                 return@launch

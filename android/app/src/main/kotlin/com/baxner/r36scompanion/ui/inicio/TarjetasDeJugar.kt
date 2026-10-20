@@ -1,5 +1,7 @@
 package com.baxner.r36scompanion.ui.inicio
 
+import com.baxner.r36scompanion.ui.juego.nombreDeJuego
+import com.baxner.r36scompanion.data.textos.Textos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
@@ -22,8 +24,8 @@ import com.baxner.r36scompanion.ui.theme.CompanionColors
  */
 
 @Composable
-fun TarjetaDePrestamo(prestada: PartidaPrestada, juego: JuegoRespaldado?, onSeguirJugando: (Long) -> Unit, onRegresar: (Long) -> Unit, modifier: Modifier = Modifier) {
-    val nombre = juego?.nombre ?: "Un juego"
+fun TarjetaDePrestamo(prestada: PartidaPrestada, juego: JuegoRespaldado?, textos: Textos, onSeguirJugando: (Long) -> Unit, onRegresar: (Long) -> Unit, modifier: Modifier = Modifier) {
+    val nombre = juego?.let { nombreDeJuego(it, textos) } ?: "Un juego"
     TarjetaDeSeccion(modifier = modifier) {
         Text("$nombre está en el teléfono", style = MaterialTheme.typography.bodyLarge, color = CompanionColors.TextPrimary)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -38,13 +40,14 @@ fun TarjetaDeIntercambioRealPendiente(
     intercambio: IntercambioReal,
     juegoA: JuegoRespaldado?,
     juegoB: JuegoRespaldado?,
+    textos: Textos,
     onContinuar: (Long, Long) -> Unit,
     onEscribir: (Long) -> Unit,
     onDescartar: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val nombreA = juegoA?.nombre ?: "un juego"
-    val nombreB = juegoB?.nombre ?: "otro juego"
+    val nombreA = juegoA?.let { nombreDeJuego(it, textos) } ?: "un juego"
+    val nombreB = juegoB?.let { nombreDeJuego(it, textos) } ?: "otro juego"
     TarjetaDeSeccion(modifier = modifier) {
         Text("Intercambio real pendiente: $nombreA y $nombreB", style = MaterialTheme.typography.bodyLarge, color = CompanionColors.TextPrimary)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

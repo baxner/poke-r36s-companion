@@ -154,7 +154,7 @@ private fun PasoElegirTipo(onElegirTipo: (TipoDeIntercambio) -> Unit, modifier: 
             TarjetaDeSeccion(modifier = Modifier.clickable { onElegirTipo(TipoDeIntercambio.RAPIDO) }) {
                 Text("Intercambio rápido", style = MaterialTheme.typography.bodyLarge, color = CompanionColors.TextPrimary)
                 Text(
-                    "Elige qué Pokémon manda cada partida y se escriben las dos al toque, sin jugar.",
+                    "Elige qué Pokémon manda cada partida y se escriben las dos de inmediato, sin jugar.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = CompanionColors.TextSecondary,
                 )

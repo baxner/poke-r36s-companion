@@ -107,8 +107,8 @@ class IntercambioRealViewModelTest {
         pump()
 
         assertEquals(EtapaDeIntercambioReal.INSTRUCCIONES, vm.uiState.value.etapa)
-        assertEquals("Pokemon Edicion Rojo Fuego", vm.uiState.value.nombreA)
-        assertEquals("Pokemon Edicion Esmeralda", vm.uiState.value.nombreB)
+        assertEquals("Rojo Fuego", vm.uiState.value.nombreA)
+        assertEquals("Esmeralda", vm.uiState.value.nombreB)
         assertFalse(f.sala.arrancada)
     }
 

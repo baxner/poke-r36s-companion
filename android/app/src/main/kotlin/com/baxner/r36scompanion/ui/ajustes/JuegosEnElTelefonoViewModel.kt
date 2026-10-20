@@ -1,5 +1,6 @@
 package com.baxner.r36scompanion.ui.ajustes
 
+import com.baxner.r36scompanion.data.respaldos.juegoPorNombreDeArchivo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baxner.r36scompanion.data.jugar.RomEnElTelefono
@@ -33,4 +34,13 @@ class JuegosEnElTelefonoViewModel(private val roms: RomsDelTelefono) : ViewModel
             }
         }
     }
+}
+
+/**
+ * El nombre a mostrar de una ROM del teléfono: el archivo del teléfono es `<juegoId>.gba`, así que
+ * sale del de la consola ("Pokemon Edicion Rojo Fuego.gba" → "Rojo Fuego"). Pura.
+ */
+fun nombreDeRom(rom: RomEnElTelefono): String {
+    val enConsola = rom.rutaEnConsola.substringAfterLast('/').substringBeforeLast('.')
+    return juegoPorNombreDeArchivo(enConsola) ?: enConsola
 }

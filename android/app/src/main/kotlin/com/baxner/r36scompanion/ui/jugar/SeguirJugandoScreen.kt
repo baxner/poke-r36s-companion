@@ -70,6 +70,7 @@ fun SeguirJugandoScreen(juegoId: Long, onBack: () -> Unit, modifier: Modifier = 
             abridor = modulos.abridorDeSalas,
             alcanceDeLaApp = modulos.alcanceDeProceso,
             regresarAlAbrir = regresarAlAbrir,
+            textos = modulos.textos,
         )
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

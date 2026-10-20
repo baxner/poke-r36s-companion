@@ -95,7 +95,7 @@ fun JuegosEnElTelefonoScreenContent(
                 TarjetaDeSeccion {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(rom.archivo.name, style = MaterialTheme.typography.bodyLarge, color = CompanionColors.TextPrimary)
+                            Text(nombreDeRom(rom), style = MaterialTheme.typography.bodyLarge, color = CompanionColors.TextPrimary)
                             Text(formatoDeTamanoEnMb(rom.tamano), style = MaterialTheme.typography.bodySmall, color = CompanionColors.TextSecondary)
                         }
                         if (borrando == rom.juegoId) {

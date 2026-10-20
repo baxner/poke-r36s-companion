@@ -134,7 +134,7 @@ fun InicioScreenContent(
 
         // Fase 5 (ver su encargo, punto 5): una tarjeta por cada partida prestada y, si hay, el intercambio real pendiente.
         items(uiState.prestadas, key = { "prestamo-${it.juegoId}" }) { prestada ->
-            TarjetaDePrestamo(prestada, uiState.nombresDeJuego[prestada.juegoId], onSeguirJugando, onRegresarDeInmediato)
+            TarjetaDePrestamo(prestada, uiState.nombresDeJuego[prestada.juegoId], textos, onSeguirJugando, onRegresarDeInmediato)
         }
         uiState.intercambioRealPendiente?.let { intercambio ->
             item(key = "intercambio-real-pendiente") {
@@ -142,6 +142,7 @@ fun InicioScreenContent(
                     intercambio = intercambio,
                     juegoA = uiState.nombresDeJuego[intercambio.juegoA],
                     juegoB = uiState.nombresDeJuego[intercambio.juegoB],
+                    textos = textos,
                     onContinuar = onContinuarIntercambioReal,
                     onEscribir = onEscribirIntercambioReal,
                     onDescartar = onDescartarIntercambioReal,
