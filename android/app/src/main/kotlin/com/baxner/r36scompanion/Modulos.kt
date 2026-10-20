@@ -20,8 +20,10 @@ import com.baxner.r36scompanion.data.intercambio.EjecutorDeIntercambioConEscrito
 import com.baxner.r36scompanion.data.intercambio.Intercambios
 import com.baxner.r36scompanion.data.intercambio.IntercambiosConMotor
 import com.baxner.r36scompanion.data.jugar.IntercambiosReales
+import com.baxner.r36scompanion.data.jugar.JugarEnElTelefono
 import com.baxner.r36scompanion.data.jugar.Prestamos
 import com.baxner.r36scompanion.data.jugar.RomsDelTelefono
+import com.baxner.r36scompanion.data.jugar.RomsDelTelefonoEnArchivos
 import com.baxner.r36scompanion.data.motor.MotorPartidas
 import com.baxner.r36scompanion.data.motor.MotorWebView
 import com.baxner.r36scompanion.data.pokedex.PokedexGlobal
@@ -94,9 +96,12 @@ class Modulos(context: Context) {
 
     // Fase 5: jugar en el teléfono (ver data/jugar/Jugar.kt). El emulador es mGBA (:emulador).
     val abridorDeSalas: AbridorDeSalas = SalaDeJuego.abridor
-    // TODO(fase 5, encargo de datos): RomsDelTelefonoEnArchivos, PrestamosEnArchivos e
-    // IntercambiosRealesEnArchivos. Mientras, fallan con un mensaje claro si alguien los usa.
-    val romsDelTelefono: RomsDelTelefono by lazy { TODO("fase 5: RomsDelTelefono") }
-    val prestamos: Prestamos by lazy { TODO("fase 5: Prestamos") }
-    val intercambiosReales: IntercambiosReales by lazy { TODO("fase 5: IntercambiosReales") }
+    private val carpetaDeJugar = File(appContext.noBackupFilesDir, "jugar")
+    val romsDelTelefono: RomsDelTelefono = RomsDelTelefonoEnArchivos(File(carpetaDeJugar, "roms"))
+
+    /** Una sola instancia para [Prestamos] e [IntercambiosReales]: comparten su mutex y su estado (ver su KDoc). */
+    private val jugarEnElTelefono =
+        JugarEnElTelefono(carpetaDeJugar, repositorioDeRespaldos, escritorDePartidas, ejecutorDeIntercambio, lectorDeResumen, reloj)
+    val prestamos: Prestamos = jugarEnElTelefono
+    val intercambiosReales: IntercambiosReales = jugarEnElTelefono
 }
