@@ -3,6 +3,8 @@ package com.baxner.r36scompanion.ui.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -22,29 +24,44 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.baxner.r36scompanion.ui.ajustes.AjustesScreen
 import com.baxner.r36scompanion.ui.ajustes.LicenciasScreen
+import com.baxner.r36scompanion.ui.banco.BancoDepositoScreen
+import com.baxner.r36scompanion.ui.banco.BancoRetiroScreen
+import com.baxner.r36scompanion.ui.banco.BancoScreen
 import com.baxner.r36scompanion.ui.diagnostico.DiagnosticoScreen
 import com.baxner.r36scompanion.ui.inicio.InicioScreen
+import com.baxner.r36scompanion.ui.intercambio.IntercambioScreen
 import com.baxner.r36scompanion.ui.introduccion.IntroduccionScreen
 import com.baxner.r36scompanion.ui.juego.JuegoScreen
 import com.baxner.r36scompanion.ui.modulosActuales
+import com.baxner.r36scompanion.ui.pokedex.PokedexDetalleScreen
+import com.baxner.r36scompanion.ui.pokedex.PokedexScreen
 
 private sealed class Destino(val ruta: String, val etiqueta: String, val icono: ImageVector) {
     data object Inicio : Destino("inicio", "Inicio", Icons.Default.Home)
+    data object Pokedex : Destino("pokedex", "Pokédex", Icons.Default.Pets)
+    data object Banco : Destino("banco", "Banco", Icons.Default.Inventory2)
     data object Ajustes : Destino("ajustes", "Ajustes", Icons.Default.Settings)
 }
 
-private val destinosDePrimerNivel = listOf(Destino.Inicio, Destino.Ajustes)
+private val destinosDePrimerNivel = listOf(Destino.Inicio, Destino.Pokedex, Destino.Banco, Destino.Ajustes)
 
 private const val RutaIntroduccion = "introduccion"
 private const val RutaDiagnostico = "diagnostico"
 private const val RutaLicencias = "ajustes/licencias"
 private const val RutaJuego = "juego/{juegoId}"
 private fun rutaDeJuego(id: Long) = "juego/$id"
+private const val RutaPokedexDetalle = "pokedex/{especie}"
+private fun rutaDePokedexDetalle(especie: Int) = "pokedex/$especie"
+private const val RutaBancoDepositar = "banco/depositar"
+private const val RutaBancoRetirar = "banco/retirar/{pokemonId}"
+private fun rutaDeBancoRetirar(pokemonId: Long) = "banco/retirar/$pokemonId"
+private const val RutaIntercambio = "intercambio"
 
 /**
- * Raíz de la app (ver el encargo, punto 2): barra inferior de Inicio/Ajustes (Pokédex y Banco
- * llegan en la fase 4) + el detalle de un juego, Introducción, Diagnóstico y Licencias, sin barra.
- * La Introducción se abre sola la primera vez (ver
+ * Raíz de la app (ver el encargo, punto 2, y el de la fase 4): barra inferior de
+ * Inicio/Pokédex/Banco/Ajustes + el detalle de un juego, de una especie, el depósito y retiro del
+ * banco, el intercambio rápido, Introducción, Diagnóstico y Licencias, sin barra. La Introducción
+ * se abre sola la primera vez (ver
  * [com.baxner.r36scompanion.data.preferencias.PreferenciasDeLaApp.introduccionVista]).
  */
 @Composable
@@ -99,12 +116,42 @@ fun CompanionApp() {
                     onVerDiagnostico = { navController.navigate(RutaDiagnostico) },
                 )
             }
+            composable(Destino.Pokedex.ruta) {
+                PokedexScreen(onAbrirEspecie = { especie -> navController.navigate(rutaDePokedexDetalle(especie)) })
+            }
+            composable(Destino.Banco.ruta) {
+                BancoScreen(
+                    onDepositar = { navController.navigate(RutaBancoDepositar) },
+                    onRetirar = { pokemonId -> navController.navigate(rutaDeBancoRetirar(pokemonId)) },
+                    onIntercambiar = { navController.navigate(RutaIntercambio) },
+                )
+            }
             composable(Destino.Ajustes.ruta) {
                 AjustesScreen(
                     onAbrirIntroduccion = { navController.navigate(RutaIntroduccion) },
                     onAbrirDiagnostico = { navController.navigate(RutaDiagnostico) },
                     onAbrirLicencias = { navController.navigate(RutaLicencias) },
                 )
+            }
+            composable(
+                route = RutaPokedexDetalle,
+                arguments = listOf(navArgument("especie") { type = NavType.IntType }),
+            ) { entry ->
+                val especie = entry.arguments?.getInt("especie") ?: 1
+                PokedexDetalleScreen(especie = especie, onBack = { navController.popBackStack() })
+            }
+            composable(RutaBancoDepositar) {
+                BancoDepositoScreen(onTerminar = { navController.popBackStack() })
+            }
+            composable(
+                route = RutaBancoRetirar,
+                arguments = listOf(navArgument("pokemonId") { type = NavType.LongType }),
+            ) { entry ->
+                val pokemonId = entry.arguments?.getLong("pokemonId") ?: -1L
+                BancoRetiroScreen(pokemonId = pokemonId, onTerminar = { navController.popBackStack() })
+            }
+            composable(RutaIntercambio) {
+                IntercambioScreen(onTerminar = { navController.popBackStack() })
             }
             composable(
                 route = RutaJuego,
