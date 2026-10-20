@@ -19,6 +19,8 @@ class IntercambiosRealesFalsos : IntercambiosReales {
 
     var errorAlEmpezar: ErrorDeJuego? = null
     var errorAlEscribir: Throwable? = null
+    /** Si no es null, [guardar] lo lanza (p. ej. sin espacio en el teléfono). */
+    var errorAlGuardar: Throwable? = null
     var cambiosARespoonder: CambiosDeIntercambioReal = CambiosDeIntercambioReal(null, null, emptyList(), emptyList())
 
     val historialDeGuardados = mutableListOf<Triple<Long, Int, ByteArray>>()
@@ -56,6 +58,7 @@ class IntercambiosRealesFalsos : IntercambiosReales {
     override suspend fun partidas(id: Long): Pair<ByteArray, ByteArray> = partidasPorId[id] ?: (ByteArray(0) to ByteArray(0))
 
     override suspend fun guardar(id: Long, jugador: Int, bytes: ByteArray): IntercambioReal {
+        errorAlGuardar?.let { throw it }
         historialDeGuardados += Triple(id, jugador, bytes)
         val actual = _pendiente.value ?: throw ErrorDeJuego.NoEstaEnElTelefono(id)
         val anterior = partidasPorId[id] ?: (ByteArray(0) to ByteArray(0))

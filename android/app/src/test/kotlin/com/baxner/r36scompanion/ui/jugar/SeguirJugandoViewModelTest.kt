@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -225,5 +226,77 @@ class SeguirJugandoViewModelTest {
         assertEquals(EtapaDeSeguirJugando.REGRESADO, vm.uiState.value.etapa)
         assertFalse(f.sala.arrancada)
         assertEquals(1, f.prestamos.vecesLlamadoRegresar)
+    }
+
+    @Test
+    fun siNoSePuedeGuardarEnElTelefonoLoAvisaYLoReintenta() {
+        val f = Escenario(listOf(juego))
+        f.prestamos.errorAlGuardar = java.io.IOException("sin espacio")
+        val vm = f.viewModel()
+        pump()
+
+        f.sala.simularGuardado(0, byteArrayOf(4, 5, 6))
+        mainDispatcher.scheduler.advanceTimeBy(500)
+        pump()
+        assertTrue(vm.uiState.value.errorAlGuardarEnElTelefono!!.contains("sin espacio"))
+        assertEquals(0, f.prestamos.historialDeGuardados.size)
+
+        // Se liberó espacio: la siguiente vuelta lo guarda sin que el juego vuelva a guardar.
+        f.prestamos.errorAlGuardar = null
+        mainDispatcher.scheduler.advanceTimeBy(500)
+        pump()
+        assertNull(vm.uiState.value.errorAlGuardarEnElTelefono)
+        assertTrue(f.prestamos.historialDeGuardados.single().second.contentEquals(byteArrayOf(4, 5, 6)))
+    }
+
+    @Test
+    fun regresarEsperaAQueLoUltimoEsteGuardadoEnElTelefono() {
+        val f = Escenario(listOf(juego))
+        val vm = f.viewModel()
+        pump()
+
+        // Un disco lento: lo último que guardó el juego tarda en quedar en el teléfono.
+        val disco = kotlinx.coroutines.CompletableDeferred<Unit>()
+        f.prestamos.guardadoDetenido = disco
+        f.sala.simularGuardado(0, byteArrayOf(9, 9, 9))
+        vm.confirmarSalir()
+        pump()
+        assertTrue("sigue guardando", vm.uiState.value.procesando)
+        assertFalse(vm.uiState.value.etapa == EtapaDeSeguirJugando.PARTIDA_EN_TELEFONO)
+
+        vm.regresar()
+        pump()
+        assertEquals("no regresa nada mientras guarda", 0, f.prestamos.vecesLlamadoRegresar)
+
+        disco.complete(Unit)
+        pump()
+        assertEquals(EtapaDeSeguirJugando.PARTIDA_EN_TELEFONO, vm.uiState.value.etapa)
+        vm.regresar()
+        pump()
+        assertEquals(listOf("guardar", "regresar"), f.prestamos.llamadas)
+    }
+
+    @Test
+    fun siLoUltimoNoSeGuardoNoRegresaUnaVersionVieja() {
+        val f = Escenario(listOf(juego))
+        val vm = f.viewModel()
+        pump()
+
+        f.prestamos.errorAlGuardar = java.io.IOException("sin espacio")
+        f.sala.simularGuardado(0, byteArrayOf(7, 7, 7))
+        vm.confirmarSalir()
+        pump()
+        assertEquals(EtapaDeSeguirJugando.PARTIDA_EN_TELEFONO, vm.uiState.value.etapa)
+        assertTrue(vm.uiState.value.errorAlGuardarEnElTelefono != null)
+
+        vm.regresar()
+        pump()
+        assertEquals(0, f.prestamos.vecesLlamadoRegresar)
+
+        f.prestamos.errorAlGuardar = null
+        vm.regresar()
+        pump()
+        assertEquals(listOf("guardar", "regresar"), f.prestamos.llamadas)
+        assertTrue(f.prestamos.historialDeGuardados.single().second.contentEquals(byteArrayOf(7, 7, 7)))
     }
 }

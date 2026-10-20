@@ -342,4 +342,26 @@ class IntercambioRealViewModelTest {
 
         assertTrue(vm.uiState.value.necesitaPokedexNacional)
     }
+
+    @Test
+    fun alTerminarSinEspacioPideReintentarYNoPierdeLaPartida() {
+        val f = escenario()
+        val vm = f.viewModel()
+        pump()
+        vm.empezarAJugar()
+        pump()
+
+        f.reales.errorAlGuardar = java.io.IOException("sin espacio")
+        f.sala.simularGuardado(1, byteArrayOf(2, 2))
+        vm.confirmarTerminar()
+        pump()
+        assertEquals(EtapaDeIntercambioReal.ERROR_AL_GUARDAR, vm.uiState.value.etapa)
+        assertTrue(vm.uiState.value.errorAlGuardarEnElTelefono!!.contains("jugador 2"))
+
+        f.reales.errorAlGuardar = null
+        vm.confirmarTerminar()
+        pump()
+        assertEquals(EtapaDeIntercambioReal.REVISION, vm.uiState.value.etapa)
+        assertTrue(f.reales.historialDeGuardados.last().third.contentEquals(byteArrayOf(2, 2)))
+    }
 }

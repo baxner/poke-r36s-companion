@@ -3,6 +3,7 @@ package com.baxner.r36scompanion.ui.jugar
 import android.view.Surface
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -182,6 +184,21 @@ fun SeguirJugandoScreenContent(
             subtitulo = "La del teléfono se guardó aparte: no se perdió.",
             modifier = modifier.fillMaxSize(),
         )
+    }
+
+    // No se cierra: se quita solo cuando el guardado en el teléfono sale bien.
+    uiState.errorAlGuardarEnElTelefono?.let { mensaje ->
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            Text(
+                mensaje,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                modifier = Modifier
+                    .padding(12.dp)
+                    .background(MaterialTheme.colorScheme.errorContainer, RoundedCornerShape(12.dp))
+                    .padding(12.dp),
+            )
+        }
     }
 
     uiState.mensajeDeError?.takeIf { uiState.etapa == EtapaDeSeguirJugando.JUGANDO }?.let { mensaje ->

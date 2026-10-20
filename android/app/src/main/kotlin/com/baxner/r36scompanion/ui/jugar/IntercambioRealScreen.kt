@@ -1,5 +1,7 @@
 package com.baxner.r36scompanion.ui.jugar
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import android.content.res.Configuration
 import android.view.Surface
 import androidx.activity.compose.BackHandler
@@ -119,6 +121,7 @@ fun IntercambioRealScreen(juegoA: Long, juegoB: Long, onTerminar: () -> Unit, mo
             uiState = uiState,
             onEmpezarAJugar = viewModel::empezarAJugar,
             onReintentar = viewModel::reintentar,
+            onReintentarGuardar = viewModel::confirmarTerminar,
             onControlar = viewModel::controlar,
             onTeclas = viewModel::teclas,
             onTenerSuperficie = viewModel::pantalla,
@@ -140,6 +143,7 @@ fun IntercambioRealScreenContent(
     uiState: IntercambioRealUiState,
     onEmpezarAJugar: () -> Unit,
     onReintentar: () -> Unit,
+    onReintentarGuardar: () -> Unit = {},
     onControlar: (Int) -> Unit,
     onTeclas: (Int, Int) -> Unit,
     onTenerSuperficie: (Int, Surface?, Int) -> Unit,
@@ -162,6 +166,11 @@ fun IntercambioRealScreenContent(
         EtapaDeIntercambioReal.ERROR_DE_ROM -> MensajeConReintentarContent(uiState.mensajeDeErrorDeRom ?: "No se pudo copiar un juego", onReintentar, modifier)
         EtapaDeIntercambioReal.ERROR_AL_EMPEZAR -> MensajeConReintentarContent(uiState.mensajeDeError ?: "No se pudo empezar el intercambio", onReintentar, modifier)
         EtapaDeIntercambioReal.ERROR_DE_RED -> MensajeConReintentarContent(uiState.mensajeDeError ?: "Se perdió la conexión con la consola", onReintentar, modifier)
+        EtapaDeIntercambioReal.ERROR_AL_GUARDAR -> MensajeConReintentarContent(
+            uiState.errorAlGuardarEnElTelefono ?: "No se pudo guardar en el teléfono",
+            onReintentarGuardar,
+            modifier,
+        )
         EtapaDeIntercambioReal.INSTRUCCIONES -> InstruccionesDelClubDeCableContent(uiState.necesitaPokedexNacional, onEmpezarAJugar, modifier)
         EtapaDeIntercambioReal.JUGANDO, EtapaDeIntercambioReal.CONFIRMAR_TERMINAR ->
             JugandoDobleContent(uiState, onControlar, onTeclas, onTenerSuperficie, modifier)
@@ -185,6 +194,21 @@ fun IntercambioRealScreenContent(
             confirmButton = {},
             text = { ConfirmarDescartarIntercambioContent(onConfirmar = onConfirmarDescartar, onCancelar = onCancelarDescartar) },
         )
+    }
+
+    // Mientras juegan: no se cierra, se quita solo cuando el guardado en el teléfono sale bien.
+    uiState.errorAlGuardarEnElTelefono?.takeIf { uiState.etapa == EtapaDeIntercambioReal.JUGANDO }?.let { mensaje ->
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            Text(
+                mensaje,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                modifier = Modifier
+                    .padding(12.dp)
+                    .background(MaterialTheme.colorScheme.errorContainer, RoundedCornerShape(12.dp))
+                    .padding(12.dp),
+            )
+        }
     }
 }
 

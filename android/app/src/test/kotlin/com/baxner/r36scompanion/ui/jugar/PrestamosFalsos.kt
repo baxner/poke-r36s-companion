@@ -19,6 +19,12 @@ class PrestamosFalsos : Prestamos {
     var avisos: List<AvisoAntesDeJugar> = emptyList()
     var errorAlLlevar: ErrorDeJuego? = null
     var errorAlRegresar: Throwable? = null
+    /** Si no es null, [guardar] lo lanza (p. ej. sin espacio en el teléfono). */
+    var errorAlGuardar: Throwable? = null
+    /** Si no es null, [guardar] espera a que se complete antes de guardar (un disco lento). */
+    var guardadoDetenido: kotlinx.coroutines.CompletableDeferred<Unit>? = null
+    /** "guardar" y "regresar" en el orden en que llegaron. */
+    val llamadas = mutableListOf<String>()
 
     /** Cada llamada a [guardar], en orden: para comprobar que se llama cuando toca y no de más. */
     val historialDeGuardados = mutableListOf<Pair<Long, ByteArray>>()
@@ -52,6 +58,9 @@ class PrestamosFalsos : Prestamos {
     override suspend fun partida(juegoId: Long): ByteArray = partidasPorJuego[juegoId] ?: ByteArray(0)
 
     override suspend fun guardar(juegoId: Long, bytes: ByteArray): PartidaPrestada {
+        guardadoDetenido?.await()
+        errorAlGuardar?.let { throw it }
+        llamadas += "guardar"
         historialDeGuardados += juegoId to bytes
         partidasPorJuego[juegoId] = bytes
         val actual = prestamosPorJuego[juegoId] ?: PartidaPrestada(juegoId, null, 1_000L, null, 0, null)
@@ -63,6 +72,7 @@ class PrestamosFalsos : Prestamos {
 
     override suspend fun regresar(sesion: SesionDeConsola, juegoId: Long): ResultadoDeEscritura? {
         vecesLlamadoRegresar++
+        llamadas += "regresar"
         errorAlRegresar?.let { throw it }
         prestamosPorJuego.remove(juegoId)
         actualizar()

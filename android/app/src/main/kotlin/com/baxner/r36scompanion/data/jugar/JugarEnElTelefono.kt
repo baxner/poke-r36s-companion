@@ -141,7 +141,7 @@ class JugarEnElTelefono(
             EstadoDeJugarJson()
         }
 
-    private fun persistirEstado() {
+    private suspend fun persistirEstado() {
         val json = EstadoDeJugarJson(
             prestamos = prestamosFlow.value.map { it.aJson() },
             intercambio = pendienteFlow.value?.aJson(),
@@ -241,13 +241,13 @@ class JugarEnElTelefono(
         resultado
     }
 
-    private fun descartarPrestamoSinLock(juegoId: Long) {
+    private suspend fun descartarPrestamoSinLock(juegoId: Long) {
         moverADescartadas(archivoDePrestamo(juegoId, "actual"), juegoId, sufijo = null)
         quitarPrestamoDelEstado(juegoId)
         carpetaDePrestamo(juegoId).deleteRecursively()
     }
 
-    private fun quitarPrestamoDelEstado(juegoId: Long) {
+    private suspend fun quitarPrestamoDelEstado(juegoId: Long) {
         prestamosFlow.value = prestamosFlow.value.filterNot { it.juegoId == juegoId }
         persistirEstado()
     }
@@ -363,7 +363,7 @@ class JugarEnElTelefono(
         carpetaDeIntercambio(id).deleteRecursively()
     }
 
-    private fun descartarIntercambioSinLock(intercambio: IntercambioReal) {
+    private suspend fun descartarIntercambioSinLock(intercambio: IntercambioReal) {
         moverADescartadas(archivoDeIntercambio(intercambio.id, "a-actual"), intercambio.juegoA, sufijo = "a")
         moverADescartadas(archivoDeIntercambio(intercambio.id, "b-actual"), intercambio.juegoB, sufijo = "b")
         quitarIntercambioDelEstado()
@@ -381,7 +381,7 @@ class JugarEnElTelefono(
         descartarIntercambioSinLock(intercambioDeOError(id))
     }
 
-    private fun quitarIntercambioDelEstado() {
+    private suspend fun quitarIntercambioDelEstado() {
         pendienteFlow.value = null
         persistirEstado()
     }

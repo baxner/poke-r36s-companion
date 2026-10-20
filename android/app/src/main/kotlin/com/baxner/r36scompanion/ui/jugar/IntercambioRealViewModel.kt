@@ -59,10 +59,15 @@ enum class EtapaDeIntercambioReal {
     ESCRITO,
     DESCARTADO,
     ERROR_DE_RED,
+
+    /** Al terminar, lo último que guardó un juego no se pudo escribir en el teléfono: reintentar antes de seguir. */
+    ERROR_AL_GUARDAR,
 }
 
 data class IntercambioRealUiState(
     val etapa: EtapaDeIntercambioReal = EtapaDeIntercambioReal.CARGANDO,
+    /** Lo último que guardó un juego no se pudo escribir en el teléfono (p. ej. sin espacio): se reintenta solo. */
+    val errorAlGuardarEnElTelefono: String? = null,
     val nombreA: String = "",
     val nombreB: String = "",
     val mensajeDeErrorDeRom: String? = null,
@@ -106,6 +111,8 @@ class IntercambioRealViewModel(
     private var romB: RomEnElTelefono? = null
     private val ultimosVecesGuardado = IntArray(2)
     private val ultimasGuardadas = arrayOfNulls<ByteArray>(2)
+    /** Lo último que guardó cada juego y todavía no está en el disco del teléfono. */
+    private val pendientes = arrayOfNulls<ByteArray>(2)
 
     init {
         viewModelScope.launch {
@@ -215,14 +222,10 @@ class IntercambioRealViewModel(
                     val veces = s.vecesQueGuardo(jugador)
                     if (veces != ultimosVecesGuardado[jugador]) {
                         ultimosVecesGuardado[jugador] = veces
-                        s.partidaGuardada(jugador)?.let { bytes ->
-                            ultimasGuardadas[jugador] = bytes
-                            runCatching { reales.guardar(id, jugador, bytes) }.onSuccess { intercambio ->
-                                _uiState.update { it.copy(vecesGuardadaA = intercambio.vecesGuardadaA, vecesGuardadaB = intercambio.vecesGuardadaB) }
-                            }
-                        }
+                        s.partidaGuardada(jugador)?.let { pendientes[jugador] = it }
                     }
                 }
+                guardarPendientes()
                 if (!s.conSonido) _uiState.update { it.copy(conSonido = s.reabrirSonido()) }
             }
         }
@@ -260,10 +263,14 @@ class IntercambioRealViewModel(
         _uiState.update { it.copy(etapa = EtapaDeIntercambioReal.JUGANDO) }
     }
 
+    /** También es el "Reintentar" de [EtapaDeIntercambioReal.ERROR_AL_GUARDAR]: la sala ya terminó y sigue desde guardar. */
     fun confirmarTerminar() {
         _uiState.update { it.copy(procesando = true) }
         viewModelScope.launch {
-            guardarLoQueCambioAlTerminar(resultadosDeTerminarSala())
+            if (!guardarLoQueCambioAlTerminar(resultadosDeTerminarSala())) {
+                _uiState.update { it.copy(procesando = false, etapa = EtapaDeIntercambioReal.ERROR_AL_GUARDAR) }
+                return@launch
+            }
             try {
                 reales.terminarDeJugar(id)
                 val cambios = reales.cambios(id)
@@ -334,22 +341,46 @@ class IntercambioRealViewModel(
         return resultados
     }
 
-    private suspend fun guardarLoQueCambioAlTerminar(resultados: List<ByteArray?>) {
+    /** true si ya no falta nada por guardar en el teléfono. */
+    private suspend fun guardarLoQueCambioAlTerminar(resultados: List<ByteArray?>): Boolean {
         resultados.forEachIndexed { jugador, bytes ->
-            if (bytes != null && !bytes.contentEquals(ultimasGuardadas.getOrNull(jugador))) {
+            if (bytes != null && !bytes.contentEquals(ultimasGuardadas.getOrNull(jugador))) pendientes[jugador] = bytes
+        }
+        return guardarPendientes()
+    }
+
+    /**
+     * Escribe en el teléfono lo que falte de cada juego. true si ya no falta nada. Si algo falla, lo
+     * deja pendiente (se reintenta en la siguiente vuelta del sondeo o al terminar) y lo avisa.
+     */
+    private suspend fun guardarPendientes(): Boolean {
+        for (jugador in 0..1) {
+            val bytes = pendientes[jugador] ?: continue
+            try {
+                val intercambio = reales.guardar(id, jugador, bytes)
                 ultimasGuardadas[jugador] = bytes
-                runCatching { reales.guardar(id, jugador, bytes) }
+                if (pendientes[jugador] === bytes) pendientes[jugador] = null
+                _uiState.update {
+                    it.copy(vecesGuardadaA = intercambio.vecesGuardadaA, vecesGuardadaB = intercambio.vecesGuardadaB, errorAlGuardarEnElTelefono = null)
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(errorAlGuardarEnElTelefono = "No se pudo guardar en el teléfono lo último que guardó el jugador ${jugador + 1} (${e.message ?: "error"}). Libera espacio; se vuelve a intentar.")
+                }
+                return false
             }
         }
+        return true
     }
 
     override fun onCleared() {
         val resultados = resultadosDeTerminarSala()
-        if (resultados.isEmpty()) return
+        resultados.forEachIndexed { jugador, bytes ->
+            if (bytes != null && !bytes.contentEquals(ultimasGuardadas.getOrNull(jugador))) pendientes[jugador] = bytes
+        }
+        if (pendientes.all { it == null }) return
         alcanceDeLaApp.launch {
-            withContext(NonCancellable) {
-                guardarLoQueCambioAlTerminar(resultados)
-            }
+            withContext(NonCancellable) { guardarPendientes() }
         }
     }
 }

@@ -9,11 +9,13 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.util.zip.ZipInputStream
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -120,7 +122,7 @@ class RomsDelTelefonoEnArchivos(
         if (libre < necesita) throw ErrorDeRom.SinEspacio(necesita, libre)
 
         val leido = sesion.leer(remoto.ruta, maximo = TopeDeRom)
-        val datosGba = if (esZip) extraerGbaDeZip(leido, remoto.ruta) else leido
+        val datosGba = if (esZip) withContext(Dispatchers.IO) { extraerGbaDeZip(leido, remoto.ruta) } else leido
 
         if (datosGba.size < 0xC0 || datosGba[3] != 0xEA.toByte()) throw ErrorDeRom.NoEsDeGba(remoto.ruta)
         val codigoDeJuego = String(datosGba, 0xAC, 4, Charsets.US_ASCII)
