@@ -50,6 +50,7 @@ fun AjustesScreen(
     onAbrirIntroduccion: () -> Unit,
     onAbrirDiagnostico: () -> Unit,
     onAbrirLicencias: () -> Unit,
+    onAbrirJuegosEnElTelefono: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val modulos = modulosActuales()
@@ -72,6 +73,7 @@ fun AjustesScreen(
         onAbrirIntroduccion = onAbrirIntroduccion,
         onAbrirDiagnostico = onAbrirDiagnostico,
         onAbrirLicencias = onAbrirLicencias,
+        onAbrirJuegosEnElTelefono = onAbrirJuegosEnElTelefono,
         modifier = modifier,
     )
 }
@@ -89,12 +91,14 @@ fun AjustesScreenContent(
     onAbrirIntroduccion: () -> Unit,
     onAbrirDiagnostico: () -> Unit,
     onAbrirLicencias: () -> Unit,
+    onAbrirJuegosEnElTelefono: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val filas = listOf(
         FilaDeNavegacion("Introducción", "Cómo conectar la consola, paso a paso", onAbrirIntroduccion),
         FilaDeNavegacion("Diagnóstico", "¿Por qué no conecta?", onAbrirDiagnostico),
-        FilaDeNavegacion("Licencias", "PKHeX, las tablas de nombres y los sprites", onAbrirLicencias),
+        FilaDeNavegacion("Juegos en el teléfono", "Las ROMs copiadas para jugar o intercambiar sin la consola", onAbrirJuegosEnElTelefono),
+        FilaDeNavegacion("Licencias", "PKHeX, las tablas de nombres, los sprites y mGBA", onAbrirLicencias),
     )
 
     LazyColumn(

@@ -18,11 +18,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/** En qué va el intercambio rápido (ver el encargo, punto 4). */
-enum class EtapaDeIntercambio { ELEGIR_JUEGO_A, ELEGIR_JUEGO_B, ELEGIR_POKEMON, VISTA_PREVIA, EXITO }
+/**
+ * En qué va el intercambio (ver el encargo, punto 4, y el de la fase 5, punto 5): primero se
+ * elige entre rápido y real ([TipoDeIntercambio]); el real reusa [ELEGIR_JUEGO_A]/[ELEGIR_JUEGO_B]
+ * (la misma elección de los dos juegos) y, al tener los dos, [LISTO_PARA_REAL] le dice a la
+ * pantalla que navegue a [com.baxner.r36scompanion.ui.jugar.IntercambioRealScreen] (este
+ * ViewModel no conoce la navegación).
+ */
+enum class EtapaDeIntercambio { ELEGIR_TIPO, ELEGIR_JUEGO_A, ELEGIR_JUEGO_B, LISTO_PARA_REAL, ELEGIR_POKEMON, VISTA_PREVIA, EXITO }
+
+enum class TipoDeIntercambio { RAPIDO, REAL }
 
 data class IntercambioUiState(
-    val etapa: EtapaDeIntercambio = EtapaDeIntercambio.ELEGIR_JUEGO_A,
+    val etapa: EtapaDeIntercambio = EtapaDeIntercambio.ELEGIR_TIPO,
+    val tipo: TipoDeIntercambio = TipoDeIntercambio.RAPIDO,
     val cargando: Boolean = true,
     val juegosEditables: List<JuegoRespaldado> = emptyList(),
     val juegoA: JuegoRespaldado? = null,
@@ -41,10 +50,11 @@ data class IntercambioUiState(
 }
 
 /**
- * El intercambio rápido entre dos partidas del usuario (ver el encargo, punto 4 y el KDoc de
- * `Intercambio.kt`): elegir A y B → elegir qué manda cada lado (equipo o cajas) →
- * `vistaPrevia` (sin escribir nada) → `intercambiar` (en memoria) →
- * `EjecutorDeIntercambio.escribirEnLaConsola` (A y luego B, con sus reglas de seguridad).
+ * El intercambio entre dos partidas del usuario: rápido (ver el KDoc de `Intercambio.kt`) o real,
+ * jugando dentro de los dos juegos (ver el encargo de la fase 5, punto 4). Elegir A y B →
+ * rápido: elegir qué manda cada lado → `vistaPrevia` → `intercambiar` →
+ * `EjecutorDeIntercambio.escribirEnLaConsola`; real: [EtapaDeIntercambio.LISTO_PARA_REAL] y la
+ * pantalla navega a la pantalla nueva con los dos juegos elegidos.
  */
 class IntercambioViewModel(private val modulos: Modulos) : ViewModel() {
     private val _uiState = MutableStateFlow(IntercambioUiState())
@@ -58,6 +68,16 @@ class IntercambioViewModel(private val modulos: Modulos) : ViewModel() {
             val juegos = modulos.repositorioDeRespaldos.juegosDePokemonEditables()
             _uiState.value = _uiState.value.copy(cargando = false, juegosEditables = juegos)
         }
+    }
+
+    fun elegirTipo(tipo: TipoDeIntercambio) {
+        _uiState.value = _uiState.value.copy(tipo = tipo, etapa = EtapaDeIntercambio.ELEGIR_JUEGO_A)
+    }
+
+    fun volverAElegirTipo() {
+        bytesA = null
+        bytesB = null
+        _uiState.value = IntercambioUiState(cargando = false, juegosEditables = _uiState.value.juegosEditables)
     }
 
     fun elegirJuegoA(juego: JuegoRespaldado) {
@@ -79,6 +99,10 @@ class IntercambioViewModel(private val modulos: Modulos) : ViewModel() {
             _uiState.value = _uiState.value.copy(cargando = true, juegoB = juego, error = null)
             try {
                 bytesB = modulos.repositorioDeRespaldos.ultimaPartidaDe(juego.id) ?: throw IllegalStateException("no hay una partida respaldada de este juego")
+                if (_uiState.value.tipo == TipoDeIntercambio.REAL) {
+                    _uiState.value = _uiState.value.copy(cargando = false, etapa = EtapaDeIntercambio.LISTO_PARA_REAL)
+                    return@launch
+                }
                 val pokemonDeA = modulos.editorDePartidas.abrir(bytesDeA, juegoA.nombre).let { it.equipo() + it.cajas().flatMap { caja -> caja.pokemon } }
                 val pokemonDeB = modulos.editorDePartidas.abrir(bytesB!!, juego.nombre).let { it.equipo() + it.cajas().flatMap { caja -> caja.pokemon } }
                 _uiState.value = _uiState.value.copy(
@@ -163,7 +187,7 @@ class IntercambioViewModel(private val modulos: Modulos) : ViewModel() {
     fun volverAElegirJuegoA() {
         bytesA = null
         bytesB = null
-        _uiState.value = IntercambioUiState(cargando = false, juegosEditables = _uiState.value.juegosEditables)
+        _uiState.value = IntercambioUiState(cargando = false, juegosEditables = _uiState.value.juegosEditables, tipo = _uiState.value.tipo, etapa = EtapaDeIntercambio.ELEGIR_JUEGO_A)
     }
 
     fun volverAElegirJuegoB() {

@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baxner.r36scompanion.Modulos
 import com.baxner.r36scompanion.data.conexion.EstadoDeConexion
+import com.baxner.r36scompanion.data.jugar.PartidaPrestada
+import com.baxner.r36scompanion.data.jugar.Prestamos
 import com.baxner.r36scompanion.data.respaldos.ErrorDeEscritura
 import com.baxner.r36scompanion.data.respaldos.JuegoRespaldado
 import com.baxner.r36scompanion.data.respaldos.ResultadoDeEscritura
@@ -19,15 +21,27 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
- * El detalle de un juego (ver el encargo, punto 4): el juego en sí (cabecera y equipo), su
- * historial de partida y de estados, y restaurar/exportar. Expone varios [StateFlow] sueltos (en
+ * El detalle de un juego (ver el encargo, punto 4). Expone varios [StateFlow] sueltos (en
  * vez de un único estado combinado) porque mezclar seis flujos de tipos distintos en un solo
  * `combine` no sale limpio; [ui.juego.JuegoScreen] arma su `JuegoUiState` juntándolos.
+ *
+ * [prestamos] (fase 5, "seguir jugando en el teléfono": ver el encargo de esa fase, punto 5) tiene
+ * un valor por defecto sacado de [Modulos] para no cambiar el constructor que ya usan
+ * `CompanionNavHost` y las pruebas existentes de este ViewModel.
  */
-class JuegoViewModel(private val modulos: Modulos, private val juegoId: Long) : ViewModel() {
+class JuegoViewModel(
+    private val modulos: Modulos,
+    private val juegoId: Long,
+    private val prestamos: Prestamos = modulos.prestamos,
+) : ViewModel() {
 
     val juego: StateFlow<JuegoRespaldado?> = modulos.repositorioDeRespaldos.juegos()
         .map { lista -> lista.firstOrNull { it.id == juegoId } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    /** Si esta partida está prestada ahora mismo (ver el encargo de la fase 5, punto 5): aviso + "Seguir jugando"/"Regresar". */
+    val prestada: StateFlow<PartidaPrestada?> = prestamos.prestadas()
+        .map { lista -> lista.firstOrNull { it.juegoId == juegoId } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val historialYEstados: StateFlow<Pair<List<ItemDeHistorial>, List<VersionRespaldada>>> =

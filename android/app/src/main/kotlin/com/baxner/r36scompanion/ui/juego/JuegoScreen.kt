@@ -17,11 +17,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -37,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.baxner.r36scompanion.data.jugar.PartidaPrestada
 import com.baxner.r36scompanion.data.respaldos.JuegoRespaldado
 import com.baxner.r36scompanion.data.respaldos.ResultadoDeEscritura
 import com.baxner.r36scompanion.data.respaldos.VersionRespaldada
@@ -45,6 +48,7 @@ import com.baxner.r36scompanion.ui.componentes.FilaDeNivel
 import com.baxner.r36scompanion.ui.componentes.NivelVisual
 import com.baxner.r36scompanion.ui.componentes.TarjetaDeSeccion
 import com.baxner.r36scompanion.ui.modulosActuales
+import com.baxner.r36scompanion.ui.texto.formatoDeFechaYHora
 import com.baxner.r36scompanion.ui.theme.CompanionColors
 
 /** Lo que pinta el detalle de un juego, juntando los [kotlinx.coroutines.flow.StateFlow] sueltos de [JuegoViewModel]. */
@@ -57,11 +61,20 @@ data class JuegoUiState(
     val resultadoDeRestaurar: ResultadoDeEscritura? = null,
     val errorDeRestaurar: String? = null,
     val errorDeExportar: String? = null,
+    /** Fase 5, "seguir jugando en el teléfono" (ver el encargo de esa fase, punto 5). */
+    val prestada: PartidaPrestada? = null,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun JuegoScreen(juegoId: Long, onBack: () -> Unit, onEditar: (Long) -> Unit, modifier: Modifier = Modifier) {
+fun JuegoScreen(
+    juegoId: Long,
+    onBack: () -> Unit,
+    onEditar: (Long) -> Unit,
+    onSeguirJugando: (Long) -> Unit,
+    onRegresarDeInmediato: (Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val modulos = modulosActuales()
     val viewModel: JuegoViewModel = viewModel(key = "juego-$juegoId") { JuegoViewModel(modulos, juegoId) }
     val context = LocalContext.current
@@ -74,6 +87,7 @@ fun JuegoScreen(juegoId: Long, onBack: () -> Unit, onEditar: (Long) -> Unit, mod
     val resultadoDeRestaurar by viewModel.resultadoDeRestaurar.collectAsStateWithLifecycle()
     val errorDeRestaurar by viewModel.errorDeRestaurar.collectAsStateWithLifecycle()
     val errorDeExportar by viewModel.errorDeExportar.collectAsStateWithLifecycle()
+    val prestada by viewModel.prestada.collectAsStateWithLifecycle()
 
     var versionAConfirmar by remember { mutableStateOf<Long?>(null) }
 
@@ -90,6 +104,7 @@ fun JuegoScreen(juegoId: Long, onBack: () -> Unit, onEditar: (Long) -> Unit, mod
         resultadoDeRestaurar = resultadoDeRestaurar,
         errorDeRestaurar = errorDeRestaurar,
         errorDeExportar = errorDeExportar,
+        prestada = prestada,
     )
 
     Scaffold(
@@ -117,6 +132,8 @@ fun JuegoScreen(juegoId: Long, onBack: () -> Unit, onEditar: (Long) -> Unit, mod
             textos = modulos.textos,
             versionAConfirmar = versionAConfirmar,
             onEditar = { onEditar(juegoId) },
+            onSeguirJugando = { onSeguirJugando(juegoId) },
+            onRegresarDeInmediato = { onRegresarDeInmediato(juegoId) },
             onPedirRestaurar = { versionAConfirmar = it },
             onConfirmarRestaurar = {
                 versionAConfirmar?.let(viewModel::restaurar)
@@ -137,6 +154,8 @@ fun JuegoScreenContent(
     textos: Textos,
     versionAConfirmar: Long?,
     onEditar: () -> Unit,
+    onSeguirJugando: () -> Unit,
+    onRegresarDeInmediato: () -> Unit,
     onPedirRestaurar: (Long) -> Unit,
     onConfirmarRestaurar: () -> Unit,
     onCancelarRestaurar: () -> Unit,
@@ -165,6 +184,11 @@ fun JuegoScreenContent(
                     }
                 }
             }
+        }
+
+        // Fase 5: "seguir jugando en el teléfono" (ver el encargo de esa fase, puntos 3 y 5), para cualquier juego de GBA.
+        if (juego?.sistema == "gba") {
+            item { TarjetaDeSeguirJugando(uiState.prestada, onSeguirJugando, onRegresarDeInmediato) }
         }
 
         uiState.resultadoDeRestaurar?.let { resultado ->
@@ -201,6 +225,25 @@ fun JuegoScreenContent(
             confirmButton = {},
             text = { ConfirmarRestaurarContent(onConfirmar = onConfirmarRestaurar, onCancelar = onCancelarRestaurar) },
         )
+    }
+}
+
+/** La tarjeta de "seguir jugando" en el detalle del juego (ver el encargo de la fase 5, punto 5). */
+@Composable
+private fun TarjetaDeSeguirJugando(prestada: PartidaPrestada?, onSeguirJugando: () -> Unit, onRegresarDeInmediato: () -> Unit) {
+    TarjetaDeSeccion {
+        if (prestada == null) {
+            Button(onClick = onSeguirJugando, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.SportsEsports, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                Text("Seguir jugando en el teléfono")
+            }
+        } else {
+            FilaDeNivel(NivelVisual.INFO, "Esta partida está en el teléfono desde ${formatoDeFechaYHora(prestada.desde)}")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = onSeguirJugando) { Text("Seguir jugando") }
+                OutlinedButton(onClick = onRegresarDeInmediato) { Text("Regresar a la consola") }
+            }
+        }
     }
 }
 

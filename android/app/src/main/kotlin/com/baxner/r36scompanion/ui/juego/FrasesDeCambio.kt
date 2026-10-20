@@ -20,7 +20,15 @@ import com.baxner.r36scompanion.ui.texto.formatoDeDuracionEnMinutos
  * antes que nada en blanco.
  */
 fun frasesDeCambios(antes: ResumenGuardado?, despues: ResumenGuardado?, textos: Textos): List<String> =
-    diferencias(antes, despues).map { fraseDe(it, antes, despues, textos) }
+    frasesDeListaDeCambios(diferencias(antes, despues), antes, despues, textos)
+
+/**
+ * Como [frasesDeCambios], pero a partir de una lista de [Cambio] ya calculada (el intercambio
+ * real, fase 5: `IntercambiosReales.cambios` ya trae `cambiosA`/`cambiosB` hechos, sin que la
+ * pantalla tenga que volver a compararlos).
+ */
+fun frasesDeListaDeCambios(cambios: List<Cambio>, antes: ResumenGuardado?, despues: ResumenGuardado?, textos: Textos): List<String> =
+    cambios.map { fraseDe(it, antes, despues, textos) }
 
 private fun fraseDe(cambio: Cambio, antes: ResumenGuardado?, despues: ResumenGuardado?, textos: Textos): String = when (cambio) {
     is Cambio.Medallas -> fraseDeDiferencia(cambio.despues - cambio.antes, "medalla", "medallas")

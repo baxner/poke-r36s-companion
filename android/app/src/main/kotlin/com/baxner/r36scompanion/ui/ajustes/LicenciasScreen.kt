@@ -46,6 +46,11 @@ private val AvisosFijos = listOf(
         "Sprites",
         "Los sprites de los Pokémon son de Nintendo/Game Freak, incluidos solo para uso personal, no comercial.",
     ),
+    Aviso(
+        "mGBA",
+        "El emulador de Game Boy Advance que corre \"seguir jugando en el teléfono\" y el intercambio real (fase 5) es mGBA " +
+            "(https://mgba.io), licenciado Mozilla Public License 2.0.",
+    ),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

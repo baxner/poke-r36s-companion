@@ -1,6 +1,8 @@
 package com.baxner.r36scompanion.ui.compartido
 
 import com.baxner.r36scompanion.data.intercambio.ErrorDeIntercambio
+import com.baxner.r36scompanion.data.jugar.ErrorDeJuego
+import com.baxner.r36scompanion.data.jugar.ErrorDeRom
 import com.baxner.r36scompanion.data.respaldos.ErrorDeEscritura
 
 /**
@@ -22,4 +24,23 @@ fun mensajeDeErrorDeIntercambio(e: ErrorDeIntercambio): String = when (e) {
         "El intercambio quedó a medias y la primera partida no se pudo regresar sola. Para no perder ni duplicar " +
             "nada, entra al historial de ese juego y restaura a mano la versión de antes del intercambio antes de " +
             "volver a intentarlo."
+}
+
+/**
+ * Explica por qué no se pudo copiar la ROM de un juego al teléfono (ver el encargo de "seguir
+ * jugando", punto 3, y el KDoc de `ErrorDeRom` en `data/jugar/Jugar.kt`).
+ */
+fun mensajeDeErrorDeRom(e: ErrorDeRom): String = when (e) {
+    is ErrorDeRom.NoEncontrada -> "No se encontró la ROM de \"${e.nombre}\" en ${e.carpeta} de la consola."
+    is ErrorDeRom.FormatoNoSoportado ->
+        "En la consola, el juego está comprimido en .${e.extension}: guárdalo como .gba o .zip (${e.ruta})."
+    is ErrorDeRom.NoEsDeGba -> "Ese archivo no es una ROM de Game Boy Advance: ${e.ruta}."
+    is ErrorDeRom.SinEspacio -> "No hay espacio en el teléfono para copiar la ROM."
+}
+
+/** Explica los errores de "seguir jugando" y del intercambio real al empezar (ver `ErrorDeJuego` en `data/jugar/Jugar.kt`). */
+fun mensajeDeErrorDeJuego(e: ErrorDeJuego): String = when (e) {
+    is ErrorDeJuego.YaEstaEnElTelefono -> "Esa partida ya está en el teléfono (prestada o en un intercambio real sin terminar)."
+    is ErrorDeJuego.HayOtroIntercambio -> "Ya hay otro intercambio real sin terminar: escríbelo o descártalo antes de empezar uno nuevo."
+    is ErrorDeJuego.NoEstaEnElTelefono -> "Esa partida ya no está en el teléfono."
 }
