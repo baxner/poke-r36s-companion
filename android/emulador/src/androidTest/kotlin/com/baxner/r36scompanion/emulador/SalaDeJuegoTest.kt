@@ -25,7 +25,7 @@ import org.junit.runner.RunWith
 class SalaDeJuegoTest {
 
     private lateinit var rom: File
-    private val abiertas = mutableListOf<SalaDeJuego>()
+    private val abiertas = mutableListOf<Sala>()
 
     @Before
     fun preparar() {
@@ -39,8 +39,8 @@ class SalaDeJuegoTest {
         rom.delete()
     }
 
-    private fun abrir(vararg partidas: ByteArray, conCable: Boolean = partidas.size == 2): SalaDeJuego =
-        SalaDeJuego.abrir(partidas.map { SalaDeJuego.Juego(rom, it) }, conCable).also { abiertas += it }
+    private fun abrir(vararg partidas: ByteArray, conCable: Boolean = partidas.size == 2): Sala =
+        SalaDeJuego.abrir(partidas.map { JuegoParaSala(rom, it) }, conCable).also { abiertas += it }
 
     private fun esperar(segundos: Long, condicion: () -> Boolean) {
         val limite = System.nanoTime() + TimeUnit.SECONDS.toNanos(segundos)
@@ -135,7 +135,7 @@ class SalaDeJuegoTest {
             assertEquals("rojo", 0xFF, r)
             assertEquals("verde", 0, g)
             assertEquals("azul", 0, b)
-            sala.pantalla(0, null)
+            sala.pantalla(0, null, 1)
         } finally {
             lector.close()
             hilo.quitSafely()
@@ -187,8 +187,8 @@ class SalaDeJuegoTest {
     fun rechazaLoQueNoEsUnaRom() {
         val basura = File(rom.parentFile, "no-es-rom.gba").apply { writeBytes(ByteArray(4096) { 7 }) }
         try {
-            val error = runCatching { SalaDeJuego.abrir(listOf(SalaDeJuego.Juego(basura, ByteArray(0)))) }.exceptionOrNull()
-            assertTrue("$error", error is SalaDeJuego.ErrorAlAbrir)
+            val error = runCatching { SalaDeJuego.abrir(listOf(JuegoParaSala(basura, ByteArray(0)))) }.exceptionOrNull()
+            assertTrue("$error", error is ErrorAlAbrirSala)
         } finally {
             basura.delete()
         }
