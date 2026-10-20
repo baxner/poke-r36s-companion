@@ -27,7 +27,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** Revisión visual del intercambio rápido (ver el encargo, punto 4 y 9): Kadabra → Alakazam entre Rojo Fuego y Esmeralda. */
+/**
+ * Revisión visual del intercambio (ver el encargo, punto 4 y 9, y el de la fase 5, punto 5):
+ * elegir entre rápido y real, y Kadabra → Alakazam entre Rojo Fuego y Esmeralda en el rápido.
+ */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [35], qualifiers = RobolectricDeviceQualifiers.MediumPhone)
@@ -54,6 +57,7 @@ class IntercambioScreenshotTest {
                 IntercambioScreenContent(
                     uiState = uiState,
                     textos = textos,
+                    onElegirTipo = {},
                     onElegirJuegoA = {},
                     onElegirJuegoB = {},
                     onAlternarSeleccionA = {},
@@ -69,6 +73,9 @@ class IntercambioScreenshotTest {
         composeTestRule.mainClock.advanceTimeBy(1_000)
         composeTestRule.onRoot().captureRoboImage("build/outputs/roborazzi/intercambio_$nombre.png")
     }
+
+    @Test
+    fun elegirTipo() = capturar("elegir_tipo", IntercambioUiState(cargando = false), altura = 700)
 
     @Test
     fun elegirJuegoA() = capturar("elegir_juego_a", IntercambioUiState(cargando = false, etapa = EtapaDeIntercambio.ELEGIR_JUEGO_A, juegosEditables = DatosDeMuestraFase4.juegosEditables))

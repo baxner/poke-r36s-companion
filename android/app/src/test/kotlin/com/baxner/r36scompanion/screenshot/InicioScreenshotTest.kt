@@ -3,13 +3,16 @@ package com.baxner.r36scompanion.screenshot
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.dp
 import com.baxner.r36scompanion.data.conexion.EstadoDeConexion
+import com.baxner.r36scompanion.data.jugar.EstadoDeIntercambioReal
+import com.baxner.r36scompanion.data.jugar.IntercambioReal
+import com.baxner.r36scompanion.data.jugar.PartidaPrestada
 import com.baxner.r36scompanion.data.respaldos.ResultadoDeRespaldo
 import com.baxner.r36scompanion.data.textos.Textos
 import com.baxner.r36scompanion.ui.inicio.InicioScreenContent
 import com.baxner.r36scompanion.ui.inicio.InicioUiState
 import com.baxner.r36scompanion.ui.inicio.organizarJuegos
-import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.captureRoboImage
 import java.io.File
@@ -21,9 +24,10 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Revisión visual de Inicio con datos realistas (ver el encargo, punto 9): Rojo Fuego completo,
- * Verde Hoja vacía, un hack y un juego que no es de Pokémon, conectada y sin conexión. Regenerar
- * con `cd android && ./gradlew :app:testDebugUnitTest`.
+ * Revisión visual de Inicio con datos realistas (ver el encargo, punto 9, y el de la fase 5,
+ * punto 5): Rojo Fuego completo, Verde Hoja vacía, un hack, un juego que no es de Pokémon,
+ * conectada y sin conexión, y las tarjetas de "seguir jugando"/intercambio real pendiente.
+ * Regenerar con `cd android && ./gradlew :app:testDebugUnitTest`.
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -53,6 +57,11 @@ class InicioScreenshotTest {
                     onDescartarResultado = {},
                     onDescartarError = {},
                     onAbrirJuego = {},
+                    onSeguirJugando = {},
+                    onRegresarDeInmediato = {},
+                    onContinuarIntercambioReal = { _, _ -> },
+                    onEscribirIntercambioReal = {},
+                    onDescartarIntercambioReal = {},
                 )
             }
         }
@@ -91,4 +100,34 @@ class InicioScreenshotTest {
 
     @Test
     fun vacia() = capturar("vacia", InicioUiState(estadoDeConexion = EstadoDeConexion.SinCable))
+
+    // Fase 5 (ver su encargo, punto 5): una partida prestada y un intercambio real pendiente.
+    @Test
+    @Config(qualifiers = "+h2400dp")
+    fun conPrestamoYConIntercambioRealPendiente() = capturar(
+        "con_jugar",
+        InicioUiState(
+            estadoDeConexion = EstadoDeConexion.Conectada(
+                com.baxner.r36scompanion.data.consola.Consola("10.101.33.156", 22, "SHA256:abc", "ssh-ed25519", "rg351mp"),
+                esNueva = false,
+            ),
+            juegos = organizarJuegos(DatosDeMuestra.juegos),
+            prestadas = listOf(
+                PartidaPrestada(juegoId = DatosDeMuestra.juegoRojoFuego.id, base = "abc", desde = 1_760_000_000_000, actual = "abc", vecesGuardada = 2, ultimaVezGuardada = 1_760_000_500_000),
+            ),
+            intercambioRealPendiente = IntercambioReal(
+                id = 1L,
+                juegoA = DatosDeMuestra.juegoVerdeHoja.id,
+                baseA = "a",
+                juegoB = DatosDeMuestraFase4.juegoEsmeralda.id,
+                baseB = "b",
+                empezado = 1_760_000_000_000,
+                vecesGuardadaA = 1,
+                vecesGuardadaB = 2,
+                estado = EstadoDeIntercambioReal.POR_ESCRIBIR,
+            ),
+            nombresDeJuego = DatosDeMuestra.juegos.associateBy { it.id } + (DatosDeMuestraFase4.juegoEsmeralda.id to DatosDeMuestraFase4.juegoEsmeralda),
+        ),
+        altura = 2_400.dp,
+    )
 }

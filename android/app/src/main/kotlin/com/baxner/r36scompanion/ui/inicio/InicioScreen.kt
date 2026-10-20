@@ -43,6 +43,9 @@ fun InicioScreen(
     onAbrirJuego: (Long) -> Unit,
     onIrAAjustes: () -> Unit,
     onVerDiagnostico: () -> Unit,
+    onSeguirJugando: (Long) -> Unit,
+    onRegresarDeInmediato: (Long) -> Unit,
+    onContinuarIntercambioReal: (Long, Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val modulos = modulosActuales()
@@ -68,6 +71,11 @@ fun InicioScreen(
         onDescartarResultado = viewModel::descartarResultado,
         onDescartarError = viewModel::descartarError,
         onAbrirJuego = onAbrirJuego,
+        onSeguirJugando = onSeguirJugando,
+        onRegresarDeInmediato = onRegresarDeInmediato,
+        onContinuarIntercambioReal = onContinuarIntercambioReal,
+        onEscribirIntercambioReal = viewModel::escribirIntercambioReal,
+        onDescartarIntercambioReal = viewModel::descartarIntercambioReal,
         modifier = modifier,
     )
 }
@@ -88,6 +96,11 @@ fun InicioScreenContent(
     onDescartarResultado: () -> Unit,
     onDescartarError: () -> Unit,
     onAbrirJuego: (Long) -> Unit,
+    onSeguirJugando: (Long) -> Unit,
+    onRegresarDeInmediato: (Long) -> Unit,
+    onContinuarIntercambioReal: (Long, Long) -> Unit,
+    onEscribirIntercambioReal: (Long) -> Unit,
+    onDescartarIntercambioReal: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -115,6 +128,23 @@ fun InicioScreenContent(
                     onRespaldarTodo = onRespaldarTodo,
                     onDescartarResultado = onDescartarResultado,
                     onDescartarError = onDescartarError,
+                )
+            }
+        }
+
+        // Fase 5 (ver su encargo, punto 5): una tarjeta por cada partida prestada y, si hay, el intercambio real pendiente.
+        items(uiState.prestadas, key = { "prestamo-${it.juegoId}" }) { prestada ->
+            TarjetaDePrestamo(prestada, uiState.nombresDeJuego[prestada.juegoId], onSeguirJugando, onRegresarDeInmediato)
+        }
+        uiState.intercambioRealPendiente?.let { intercambio ->
+            item(key = "intercambio-real-pendiente") {
+                TarjetaDeIntercambioRealPendiente(
+                    intercambio = intercambio,
+                    juegoA = uiState.nombresDeJuego[intercambio.juegoA],
+                    juegoB = uiState.nombresDeJuego[intercambio.juegoB],
+                    onContinuar = onContinuarIntercambioReal,
+                    onEscribir = onEscribirIntercambioReal,
+                    onDescartar = onDescartarIntercambioReal,
                 )
             }
         }

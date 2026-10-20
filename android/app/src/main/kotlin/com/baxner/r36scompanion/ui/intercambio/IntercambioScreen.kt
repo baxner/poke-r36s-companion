@@ -26,6 +26,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,21 +48,32 @@ import com.baxner.r36scompanion.ui.theme.CompanionColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IntercambioScreen(onTerminar: () -> Unit, modifier: Modifier = Modifier) {
+fun IntercambioScreen(onTerminar: () -> Unit, onIrAIntercambioReal: (Long, Long) -> Unit, modifier: Modifier = Modifier) {
     val modulos = modulosActuales()
     val viewModel: IntercambioViewModel = viewModel { IntercambioViewModel(modulos) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // El intercambio real no se juega aquí: en cuanto los dos juegos están elegidos, esta pantalla
+    // solo avisa a la navegación y se sale (ver el KDoc de `EtapaDeIntercambio.LISTO_PARA_REAL`).
+    LaunchedEffect(uiState.etapa) {
+        if (uiState.etapa == EtapaDeIntercambio.LISTO_PARA_REAL) {
+            val juegoA = uiState.juegoA?.id
+            val juegoB = uiState.juegoB?.id
+            if (juegoA != null && juegoB != null) onIrAIntercambioReal(juegoA, juegoB)
+        }
+    }
 
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Intercambio rápido") },
+                title = { Text(if (uiState.tipo == TipoDeIntercambio.REAL && uiState.etapa != EtapaDeIntercambio.ELEGIR_TIPO) "Intercambio real" else "Intercambio rápido") },
                 navigationIcon = {
                     IconButton(onClick = {
                         when (uiState.etapa) {
-                            EtapaDeIntercambio.ELEGIR_JUEGO_A, EtapaDeIntercambio.EXITO -> onTerminar()
-                            EtapaDeIntercambio.ELEGIR_JUEGO_B -> viewModel.volverAElegirJuegoA()
+                            EtapaDeIntercambio.ELEGIR_TIPO, EtapaDeIntercambio.EXITO -> onTerminar()
+                            EtapaDeIntercambio.ELEGIR_JUEGO_A -> viewModel.volverAElegirTipo()
+                            EtapaDeIntercambio.ELEGIR_JUEGO_B, EtapaDeIntercambio.LISTO_PARA_REAL -> viewModel.volverAElegirJuegoA()
                             EtapaDeIntercambio.ELEGIR_POKEMON -> viewModel.volverAElegirJuegoB()
                             EtapaDeIntercambio.VISTA_PREVIA -> viewModel.volverAElegirPokemon()
                         }
@@ -73,6 +85,7 @@ fun IntercambioScreen(onTerminar: () -> Unit, modifier: Modifier = Modifier) {
         IntercambioScreenContent(
             uiState = uiState,
             textos = modulos.textos,
+            onElegirTipo = viewModel::elegirTipo,
             onElegirJuegoA = viewModel::elegirJuegoA,
             onElegirJuegoB = viewModel::elegirJuegoB,
             onAlternarSeleccionA = viewModel::alternarSeleccionA,
@@ -91,6 +104,7 @@ fun IntercambioScreen(onTerminar: () -> Unit, modifier: Modifier = Modifier) {
 fun IntercambioScreenContent(
     uiState: IntercambioUiState,
     textos: Textos,
+    onElegirTipo: (TipoDeIntercambio) -> Unit,
     onElegirJuegoA: (JuegoRespaldado) -> Unit,
     onElegirJuegoB: (JuegoRespaldado) -> Unit,
     onAlternarSeleccionA: (Casilla) -> Unit,
@@ -108,6 +122,7 @@ fun IntercambioScreenContent(
     }
 
     when (uiState.etapa) {
+        EtapaDeIntercambio.ELEGIR_TIPO -> PasoElegirTipo(onElegirTipo, modifier)
         EtapaDeIntercambio.ELEGIR_JUEGO_A -> PasoElegirJuego(
             titulo = "¿Cuál es la primera partida?",
             juegos = uiState.juegosEditables,
@@ -124,9 +139,37 @@ fun IntercambioScreenContent(
             onElegir = onElegirJuegoB,
             modifier = modifier,
         )
+        EtapaDeIntercambio.LISTO_PARA_REAL -> Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         EtapaDeIntercambio.ELEGIR_POKEMON -> PasoElegirPokemonDeIntercambio(uiState, textos, onAlternarSeleccionA, onAlternarSeleccionB, onAlternarEvolucionar, onVerVistaPrevia, modifier)
         EtapaDeIntercambio.VISTA_PREVIA -> PasoVistaPreviaDeIntercambio(uiState, textos, onConfirmar, onDescartarError, modifier)
         EtapaDeIntercambio.EXITO -> PasoExitoDeIntercambio(onTerminar, modifier)
+    }
+}
+
+@Composable
+private fun PasoElegirTipo(onElegirTipo: (TipoDeIntercambio) -> Unit, modifier: Modifier) {
+    LazyColumn(modifier = modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        item { Text("¿Qué tipo de intercambio?", style = MaterialTheme.typography.titleMedium, color = CompanionColors.TextPrimary) }
+        item {
+            TarjetaDeSeccion(modifier = Modifier.clickable { onElegirTipo(TipoDeIntercambio.RAPIDO) }) {
+                Text("Intercambio rápido", style = MaterialTheme.typography.bodyLarge, color = CompanionColors.TextPrimary)
+                Text(
+                    "Elige qué Pokémon manda cada partida y se escriben las dos al toque, sin jugar.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = CompanionColors.TextSecondary,
+                )
+            }
+        }
+        item {
+            TarjetaDeSeccion(modifier = Modifier.clickable { onElegirTipo(TipoDeIntercambio.REAL) }) {
+                Text("Intercambio real (con el Club de Cable)", style = MaterialTheme.typography.bodyLarge, color = CompanionColors.TextPrimary)
+                Text(
+                    "Las dos partidas corren a la vez en el teléfono, unidas por el cable: el intercambio se hace dentro de los juegos, como en la consola de verdad.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = CompanionColors.TextSecondary,
+                )
+            }
+        }
     }
 }
 
