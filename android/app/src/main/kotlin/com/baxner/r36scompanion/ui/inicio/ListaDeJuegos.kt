@@ -23,10 +23,15 @@ enum class AvisoDeJuego { NINGUNO, PARTIDA_VACIA, SOLO_RESPALDO }
  * Qué aviso mostrar bajo un juego de Pokémon (ver el encargo, punto 3). Una partida vacía
  * siempre es también "no editable" (el motor no tiene nada que leer), pero el aviso que importa
  * ahí es el de la partida vacía, no el genérico de "solo respaldo" (que es para los hacks que el
- * motor sí intentó leer y no pudo, como *Pokemon Lets Go Eevee*: ver docs/plan.md).
+ * motor sí intentó leer y no pudo, como *Pokemon Lets Go Eevee*: ver docs/plan.md). Un juego que
+ * nunca se ha respaldado ([JuegoRespaldado.ultimoRespaldo] null) tampoco es "solo respaldo"
+ * todavía: ese aviso es un veredicto sobre su partida, y sin haberla leído ni una vez no hay
+ * veredicto que dar (se vio en una captura de Inicio: *Rouge Feu (F)*, sin respaldar, salía como
+ * "Hack" sin que la app supiera nada de verdad sobre su partida).
  */
 fun avisoDe(juego: JuegoRespaldado): AvisoDeJuego = when {
     !juego.esPokemon -> AvisoDeJuego.NINGUNO
+    juego.ultimoRespaldo == null -> AvisoDeJuego.NINGUNO
     juego.estadoDePartida == EstadoDePartida.VACIA -> AvisoDeJuego.PARTIDA_VACIA
     !juego.editable -> AvisoDeJuego.SOLO_RESPALDO
     else -> AvisoDeJuego.NINGUNO

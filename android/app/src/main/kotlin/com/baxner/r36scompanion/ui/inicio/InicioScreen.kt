@@ -182,8 +182,8 @@ private fun PanelDeRespaldo(
         resultado?.let {
             FilaDescartable(onDescartarResultado) {
                 Text(
-                    "Listo: ${it.nuevas.size} nuevas, ${it.sinCambios} sin cambios" +
-                        if (it.fallidos.isNotEmpty()) ", ${it.fallidos.size} fallidas" else "",
+                    "Listo: ${it.nuevas.size} ${if (it.nuevas.size == 1) "nueva" else "nuevas"}, ${it.sinCambios} sin cambios" +
+                        if (it.fallidos.isNotEmpty()) ", ${it.fallidos.size} ${if (it.fallidos.size == 1) "fallida" else "fallidas"}" else "",
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (it.fallidos.isNotEmpty()) CompanionColors.Warning else CompanionColors.Ok,
                 )

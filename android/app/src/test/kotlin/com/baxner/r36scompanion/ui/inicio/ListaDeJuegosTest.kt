@@ -12,6 +12,7 @@ class ListaDeJuegosTest {
         esPokemon: Boolean,
         editable: Boolean = false,
         estadoDePartida: EstadoDePartida = EstadoDePartida.NO_APLICA,
+        ultimoRespaldo: Long? = 1_700_000_000_000L,
     ) = JuegoRespaldado(
         id = id,
         sistema = "gba",
@@ -19,7 +20,7 @@ class ListaDeJuegosTest {
         rutaDePartida = "/roms/gba/$nombre.srm",
         esPokemon = esPokemon,
         editable = editable,
-        ultimoRespaldo = 1_700_000_000_000L,
+        ultimoRespaldo = ultimoRespaldo,
         resumen = null,
         estadoDePartida = estadoDePartida,
     )
@@ -52,6 +53,14 @@ class ListaDeJuegosTest {
     fun unHackQueElMotorNoReconoceEsSoloRespaldo() {
         val hack = juego(1, "Pokemon Lets Go Eevee", esPokemon = true, editable = false, estadoDePartida = EstadoDePartida.CON_DATOS)
         assertEquals(AvisoDeJuego.SOLO_RESPALDO, avisoDe(hack))
+    }
+
+    @Test
+    fun unJuegoQueNuncaSeHaRespaldadoNoEsUnHackTodavia() {
+        // Visto en una captura de Inicio: "Rouge Feu (F)" sin respaldar salía con "Hack: solo
+        // respaldo" aunque la app todavía no sabe nada de su partida (ver avisoDe()).
+        val sinRespaldar = juego(1, "Pokemon - Version Rouge Feu (F)", esPokemon = true, editable = false, ultimoRespaldo = null)
+        assertEquals(AvisoDeJuego.NINGUNO, avisoDe(sinRespaldar))
     }
 
     @Test
