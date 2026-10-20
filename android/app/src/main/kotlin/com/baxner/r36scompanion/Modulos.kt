@@ -80,6 +80,7 @@ class Modulos(context: Context) {
     // Fase 4: banco, intercambio rápido y Pokédex global (ver docs/plan.md y el encargo de esta fase).
     private val bancoDb = BancoDatabase.crear(appContext)
     val banco: Banco = BancoConMotor(bancoDb, motorPartidas, reloj)
+    /** El editor (fase 3): una [com.baxner.r36scompanion.data.editor.SesionDeEdicion] por juego abierto, nunca compartida entre pantallas de distintos juegos. */
     val editorDePartidas: EditorDePartidas = EditorDePartidasConMotor(motorPartidas)
     val intercambios: Intercambios = IntercambiosConMotor(motorPartidas)
     val ejecutorDeIntercambio: EjecutorDeIntercambio = EjecutorDeIntercambioConEscritor(escritorDePartidas)

@@ -12,13 +12,24 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -93,6 +104,47 @@ fun Insignia(texto: String, modifier: Modifier = Modifier, color: Color = Compan
             style = MaterialTheme.typography.labelSmall,
             color = colorDeTexto,
         )
+    }
+}
+
+/**
+ * Un selector de una lista cerrada de opciones (especie, naturaleza, objeto, Poké Ball,
+ * movimiento…: ver el editor de Pokémon, encargo de la fase 3, punto 5), con el valor actual
+ * siempre visible y de solo lectura (nunca se escribe a mano). Cerrado por defecto: así se ve
+ * igual en una captura Roborazzi que un campo de texto normal (los menús flotantes de Compose no
+ * asientan ahí, igual que un `AlertDialog`: ver AGENTS.md).
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun <T> CampoDesplegable(
+    etiqueta: String,
+    opciones: List<T>,
+    seleccionado: T,
+    etiquetaDe: (T) -> String,
+    onSeleccionar: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    habilitado: Boolean = true,
+) {
+    var expandido by remember { mutableStateOf(false) }
+    ExposedDropdownMenuBox(
+        expanded = expandido && habilitado,
+        onExpandedChange = { if (habilitado) expandido = it },
+        modifier = modifier,
+    ) {
+        OutlinedTextField(
+            value = etiquetaDe(seleccionado),
+            onValueChange = {},
+            readOnly = true,
+            enabled = habilitado,
+            label = { Text(etiqueta) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandido) },
+            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, habilitado).fillMaxWidth(),
+        )
+        ExposedDropdownMenu(expanded = expandido && habilitado, onDismissRequest = { expandido = false }) {
+            opciones.forEach { opcion ->
+                DropdownMenuItem(text = { Text(etiquetaDe(opcion)) }, onClick = { onSeleccionar(opcion); expandido = false })
+            }
+        }
     }
 }
 

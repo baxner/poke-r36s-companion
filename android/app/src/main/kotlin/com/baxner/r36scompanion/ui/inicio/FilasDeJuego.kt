@@ -1,6 +1,7 @@
 package com.baxner.r36scompanion.ui.inicio
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.baxner.r36scompanion.data.respaldos.JuegoRespaldado
 import com.baxner.r36scompanion.data.textos.Textos
+import com.baxner.r36scompanion.ui.juego.nombreDeJuego
 import com.baxner.r36scompanion.ui.componentes.FilaDeNivel
 import com.baxner.r36scompanion.ui.componentes.Insignia
 import com.baxner.r36scompanion.ui.componentes.NivelVisual
@@ -39,8 +41,10 @@ fun FilaDeMedallas(ganadas: Int, total: Int, modifier: Modifier = Modifier) {
 
 @Composable
 private fun PuntoDeMedalla(ganada: Boolean) {
-    val color = if (ganada) CompanionColors.MedallaGanada else CompanionColors.MedallaFaltante
-    androidx.compose.foundation.layout.Box(modifier = Modifier.size(9.dp).background(color, CircleShape))
+    val modificador = Modifier.size(9.dp).background(if (ganada) CompanionColors.MedallaGanada else CompanionColors.MedallaFaltante, CircleShape)
+    androidx.compose.foundation.layout.Box(
+        modifier = if (ganada) modificador else modificador.border(1.dp, CompanionColors.MedallaFaltanteBorde, CircleShape),
+    )
 }
 
 /** Un juego de Pokémon en la lista de Inicio: entrenador, tiempo, medallas, Pokédex, equipo y avisos (ver el encargo, punto 3). */
@@ -50,7 +54,7 @@ fun FilaDeJuegoPokemon(juego: JuegoRespaldado, textos: Textos, onClick: () -> Un
     Card(modifier = modifier.fillMaxWidth().clickable(onClick = onClick), shape = RoundedCornerShape(16.dp)) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
-                text = resumen?.let { textos.juego(it.version) } ?: juego.nombre,
+                text = nombreDeJuego(juego, textos),
                 style = MaterialTheme.typography.titleMedium,
                 color = CompanionColors.TextPrimary,
             )

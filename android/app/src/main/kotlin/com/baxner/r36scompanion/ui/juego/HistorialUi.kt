@@ -10,6 +10,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +37,9 @@ fun FilaDeHistorialDePartida(item: ItemDeHistorial, esLaMasVieja: Boolean, puede
             else -> Text("Sin cambios respecto a la anterior", style = MaterialTheme.typography.bodySmall, color = CompanionColors.TextSecondary)
         }
         if (puedeRestaurar) {
-            Button(onClick = onRestaurar) { Text("Restaurar esta versión en la consola") }
+            // Discreto a propósito (texto, no un botón grande y rojo): es una acción delicada,
+            // no la que se quiere que salte a la vista primero (ver el encargo de esta fase, punto 1).
+            TextButton(onClick = onRestaurar) { Text("Restaurar esta versión en la consola") }
         }
     }
 }

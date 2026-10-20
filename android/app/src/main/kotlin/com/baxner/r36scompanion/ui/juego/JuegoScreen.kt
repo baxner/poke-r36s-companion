@@ -15,7 +15,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -59,7 +61,7 @@ data class JuegoUiState(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun JuegoScreen(juegoId: Long, onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun JuegoScreen(juegoId: Long, onBack: () -> Unit, onEditar: (Long) -> Unit, modifier: Modifier = Modifier) {
     val modulos = modulosActuales()
     val viewModel: JuegoViewModel = viewModel(key = "juego-$juegoId") { JuegoViewModel(modulos, juegoId) }
     val context = LocalContext.current
@@ -94,7 +96,7 @@ fun JuegoScreen(juegoId: Long, onBack: () -> Unit, modifier: Modifier = Modifier
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(juego?.let { it.resumen?.let { r -> modulos.textos.juego(r.version) } ?: it.nombre } ?: "") },
+                title = { Text(juego?.let { nombreDeJuego(it, modulos.textos) } ?: "") },
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Regresar") } },
                 actions = {
                     IconButton(onClick = { lanzadorExportar.launch("${juego?.nombre ?: "partida"}.zip") }) {
@@ -114,6 +116,7 @@ fun JuegoScreen(juegoId: Long, onBack: () -> Unit, modifier: Modifier = Modifier
             uiState = uiState,
             textos = modulos.textos,
             versionAConfirmar = versionAConfirmar,
+            onEditar = { onEditar(juegoId) },
             onPedirRestaurar = { versionAConfirmar = it },
             onConfirmarRestaurar = {
                 versionAConfirmar?.let(viewModel::restaurar)
@@ -133,6 +136,7 @@ fun JuegoScreenContent(
     uiState: JuegoUiState,
     textos: Textos,
     versionAConfirmar: Long?,
+    onEditar: () -> Unit,
     onPedirRestaurar: (Long) -> Unit,
     onConfirmarRestaurar: () -> Unit,
     onCancelarRestaurar: () -> Unit,
@@ -153,6 +157,14 @@ fun JuegoScreenContent(
                 }
             }
             item { EquipoDeJuego(resumen.equipo, textos) }
+            if (juego?.editable == true) {
+                item {
+                    Button(onClick = onEditar, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                        Text("Editar")
+                    }
+                }
+            }
         }
 
         uiState.resultadoDeRestaurar?.let { resultado ->

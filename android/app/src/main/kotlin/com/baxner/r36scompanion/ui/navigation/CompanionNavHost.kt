@@ -16,18 +16,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.baxner.r36scompanion.data.editor.Casilla
+import com.baxner.r36scompanion.data.editor.OrigenDeCasilla
 import com.baxner.r36scompanion.ui.ajustes.AjustesScreen
 import com.baxner.r36scompanion.ui.ajustes.LicenciasScreen
 import com.baxner.r36scompanion.ui.banco.BancoDepositoScreen
 import com.baxner.r36scompanion.ui.banco.BancoRetiroScreen
 import com.baxner.r36scompanion.ui.banco.BancoScreen
 import com.baxner.r36scompanion.ui.diagnostico.DiagnosticoScreen
+import com.baxner.r36scompanion.ui.editor.EditorScreen
+import com.baxner.r36scompanion.ui.editor.EditorViewModel
+import com.baxner.r36scompanion.ui.editor.GuardarEnConsolaScreen
+import com.baxner.r36scompanion.ui.editor.PokemonEditorScreen
 import com.baxner.r36scompanion.ui.inicio.InicioScreen
 import com.baxner.r36scompanion.ui.intercambio.IntercambioScreen
 import com.baxner.r36scompanion.ui.introduccion.IntroduccionScreen
@@ -56,6 +63,16 @@ private const val RutaBancoDepositar = "banco/depositar"
 private const val RutaBancoRetirar = "banco/retirar/{pokemonId}"
 private fun rutaDeBancoRetirar(pokemonId: Long) = "banco/retirar/$pokemonId"
 private const val RutaIntercambio = "intercambio"
+
+// El editor (fase 3): tres rutas que comparten una sola EditorViewModel (ver su KDoc) por el
+// backStackEntry de RutaEditor, obtenido con navController.getBackStackEntry.
+private const val RutaEditor = "editor/{juegoId}"
+private fun rutaDeEditor(id: Long) = "editor/$id"
+private const val RutaGuardarEnEditor = "editor/{juegoId}/guardar"
+private fun rutaDeGuardarEnEditor(id: Long) = "editor/$id/guardar"
+private const val RutaPokemonEnEditor = "editor/{juegoId}/pokemon/{origen}/{posicion}/{caja}"
+private fun rutaDePokemonEnEditor(juegoId: Long, casilla: Casilla) =
+    "editor/$juegoId/pokemon/${casilla.origen.name}/${casilla.posicion}/${casilla.caja ?: -1}"
 
 /**
  * Raíz de la app (ver el encargo, punto 2, y el de la fase 4): barra inferior de
@@ -158,7 +175,60 @@ fun CompanionApp() {
                 arguments = listOf(navArgument("juegoId") { type = NavType.LongType }),
             ) { entry ->
                 val juegoId = entry.arguments?.getLong("juegoId") ?: -1L
-                JuegoScreen(juegoId = juegoId, onBack = { navController.popBackStack() })
+                JuegoScreen(
+                    juegoId = juegoId,
+                    onBack = { navController.popBackStack() },
+                    onEditar = { id -> navController.navigate(rutaDeEditor(id)) },
+                )
+            }
+            composable(
+                route = RutaEditor,
+                arguments = listOf(navArgument("juegoId") { type = NavType.LongType }),
+            ) { entry ->
+                val juegoId = entry.arguments?.getLong("juegoId") ?: -1L
+                val modulos = modulosActuales()
+                val editorViewModel: EditorViewModel = viewModel(entry, key = "editor-$juegoId") { EditorViewModel(modulos, juegoId) }
+                EditorScreen(
+                    editorViewModel = editorViewModel,
+                    textos = modulos.textos,
+                    onBack = { navController.popBackStack() },
+                    onAbrirPokemon = { casilla -> navController.navigate(rutaDePokemonEnEditor(juegoId, casilla)) },
+                    onGuardar = { navController.navigate(rutaDeGuardarEnEditor(juegoId)) },
+                )
+            }
+            composable(
+                route = RutaPokemonEnEditor,
+                arguments = listOf(
+                    navArgument("juegoId") { type = NavType.LongType },
+                    navArgument("origen") { type = NavType.StringType },
+                    navArgument("posicion") { type = NavType.IntType },
+                    navArgument("caja") { type = NavType.IntType },
+                ),
+            ) { entry ->
+                val juegoId = entry.arguments?.getLong("juegoId") ?: -1L
+                val parentEntry = remember(entry) { navController.getBackStackEntry(rutaDeEditor(juegoId)) }
+                val modulos = modulosActuales()
+                val editorViewModel: EditorViewModel = viewModel(parentEntry, key = "editor-$juegoId") { EditorViewModel(modulos, juegoId) }
+                val origen = OrigenDeCasilla.valueOf(entry.arguments?.getString("origen") ?: OrigenDeCasilla.EQUIPO.name)
+                val posicion = entry.arguments?.getInt("posicion") ?: 0
+                val cajaCruda = entry.arguments?.getInt("caja") ?: -1
+                val casilla = Casilla(origen = origen, posicion = posicion, caja = cajaCruda.takeIf { it >= 0 })
+                PokemonEditorScreen(
+                    editorViewModel = editorViewModel,
+                    casilla = casilla,
+                    textos = modulos.textos,
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable(
+                route = RutaGuardarEnEditor,
+                arguments = listOf(navArgument("juegoId") { type = NavType.LongType }),
+            ) { entry ->
+                val juegoId = entry.arguments?.getLong("juegoId") ?: -1L
+                val parentEntry = remember(entry) { navController.getBackStackEntry(rutaDeEditor(juegoId)) }
+                val modulos = modulosActuales()
+                val editorViewModel: EditorViewModel = viewModel(parentEntry, key = "editor-$juegoId") { EditorViewModel(modulos, juegoId) }
+                GuardarEnConsolaScreen(editorViewModel = editorViewModel, onBack = { navController.popBackStack() })
             }
             composable(RutaIntroduccion) {
                 IntroduccionScreen(
