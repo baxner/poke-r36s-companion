@@ -211,8 +211,8 @@ class JugarEnElTelefono(
         resultado
     }
 
-    override suspend fun descartar(juegoId: Long): Unit = mutex.withLock {
-        prestamoDeOError(juegoId)
+    /** Sin `override`: [Prestamos.descartar] e [IntercambiosReales.descartar] comparten la misma firma JVM (ver [descartar]). */
+    private fun descartarPrestamoSinLock(juegoId: Long) {
         moverADescartadas(archivoDePrestamo(juegoId, "actual"), juegoId, sufijo = null)
         quitarPrestamoDelEstado(juegoId)
         carpetaDePrestamo(juegoId).deleteRecursively()
@@ -334,12 +334,34 @@ class JugarEnElTelefono(
         carpetaDeIntercambio(id).deleteRecursively()
     }
 
-    override suspend fun descartar(id: Long): Unit = mutex.withLock {
-        val actual = intercambioDeOError(id)
-        moverADescartadas(archivoDeIntercambio(id, "a-actual"), actual.juegoA, sufijo = "a")
-        moverADescartadas(archivoDeIntercambio(id, "b-actual"), actual.juegoB, sufijo = "b")
+    private fun descartarIntercambioSinLock(intercambio: IntercambioReal) {
+        moverADescartadas(archivoDeIntercambio(intercambio.id, "a-actual"), intercambio.juegoA, sufijo = "a")
+        moverADescartadas(archivoDeIntercambio(intercambio.id, "b-actual"), intercambio.juegoB, sufijo = "b")
         quitarIntercambioDelEstado()
-        carpetaDeIntercambio(id).deleteRecursively()
+        carpetaDeIntercambio(intercambio.id).deleteRecursively()
+    }
+
+    /**
+     * [Prestamos.descartar] e [IntercambiosReales.descartar] son, en Kotlin/JVM, la misma firma
+     * (`descartar(Long): Unit`): una clase no puede tener dos métodos que solo difieran en el
+     * nombre del parámetro, así que esta única implementación sirve a las dos interfaces y decide
+     * por [id] cuál de las dos es (los espacios de ids no se mezclan en la práctica: uno es el id
+     * de un juego ya respaldado en Room, autogenerado desde 1; el otro es `reloj.ahoraMs()` del
+     * momento en que empezó el intercambio). Si [id] no es ni un préstamo ni un intercambio
+     * pendiente, [ErrorDeJuego.NoEstaEnElTelefono].
+     */
+    override suspend fun descartar(id: Long): Unit = mutex.withLock {
+        val prestamo = prestamosFlow.value.firstOrNull { it.juegoId == id }
+        if (prestamo != null) {
+            descartarPrestamoSinLock(id)
+            return@withLock
+        }
+        val intercambio = pendienteFlow.value?.takeIf { it.id == id }
+        if (intercambio != null) {
+            descartarIntercambioSinLock(intercambio)
+            return@withLock
+        }
+        throw ErrorDeJuego.NoEstaEnElTelefono(id)
     }
 
     private fun quitarIntercambioDelEstado() {
