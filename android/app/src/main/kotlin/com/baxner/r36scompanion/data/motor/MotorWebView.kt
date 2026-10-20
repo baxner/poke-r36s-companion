@@ -226,7 +226,13 @@ interface Motor {
 
 /** Formato de los mensajes del puente, compartido con las pruebas. */
 object Puente {
-    val json = kotlinx.serialization.json.Json { ignoreUnknownKeys = true; explicitNulls = false }
+    /**
+     * `encodeDefaults`: el motor no conoce los valores por defecto de Kotlin. Sin esto, una casilla
+     * `slot = 0` (el primero del equipo) se mandaba como `{"source":"party"}` y el motor la
+     * rechazaba (`Invalid argument 'at'`). `explicitNulls = false`: los nulos no se mandan, que en
+     * un `PokemonPatch` significa "no tocar este campo", y al leer un campo ausente queda en null.
+     */
+    val json = kotlinx.serialization.json.Json { ignoreUnknownKeys = true; explicitNulls = false; encodeDefaults = true }
 
     /** Bytes en el formato del puente: `{"$bytes": "<base64>"}`. */
     fun bytes(datos: ByteArray): JsonElement =

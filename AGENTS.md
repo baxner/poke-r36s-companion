@@ -36,6 +36,10 @@ GBA de la R36S del usuario (ArkOS) por el cable USB con anclaje. Plan y decision
   emulador (`connectedDebugAndroidTest`).
 - Pruebas: lo puro separado de la E/S y probado con JUnit; reloj fijo; capturas Roborazzi de cada
   pantalla nueva (revísalas como imagen).
+- **Un motor falso no basta**: el `Json` de `Puente` manda los valores por defecto
+  (`encodeDefaults`), porque sin eso una casilla `slot = 0` llegaba sin número y el motor de
+  verdad la rechazaba, aunque el motor falso la aceptaba. Lo que cruce el puente lo vuelve a
+  probar Opus con el motor real en el emulador (`connectedDebugAndroidTest`) antes de integrar.
 - Corrutinas en pruebas: lo que corre en `backgroundScope` (observadores que nunca terminan) **no**
   avanza con `advanceUntilIdle()` si no queda nada en primer plano; usa `runCurrent()` (ver
   `data/conexion/ConexionConConsolaTest.kt`).
