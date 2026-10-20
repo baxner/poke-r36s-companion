@@ -74,7 +74,6 @@ class SeguirJugandoScreenshotTest {
     )
 
     @Test
-    @Config(qualifiers = "+h2000dp")
     fun jugando() = capturar(
         "jugando",
         SeguirJugandoUiState(
@@ -82,7 +81,7 @@ class SeguirJugandoScreenshotTest {
             nombreDeJuego = "Pokemon Edicion Rojo Fuego",
             ultimoGuardadoEnElTelefono = 0L,
         ),
-        altura = 2_000.dp,
+        altura = 915.dp,
     )
 
     @Test

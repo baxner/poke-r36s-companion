@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -236,28 +237,63 @@ private fun JugandoDobleContent(
         )
     }
 
+    // En horizontal, las etiquetas van en su propia fila arriba (no encima de la pantalla): los
+    // controles se superponen en un `Box` que solo cubre las dos pantallas, para que L/R
+    // (arriba de ese `Box`) nunca choquen con el texto de la etiqueta (se vio en una captura:
+    // con el nombre largo la etiqueta pasaba a dos líneas y L/R le caían encima).
     if (horizontal) {
-        Box(modifier = modifier.fillMaxSize()) {
-            Row(modifier = Modifier.fillMaxSize()) {
-                PantallaConEtiqueta(0, uiState.nombreA, uiState.vecesGuardadaA, uiState.jugadorControlado == 0, entrada, onTenerSuperficie, onTeclas, onControlar, Modifier.weight(1f).fillMaxHeight())
-                PantallaConEtiqueta(1, uiState.nombreB, uiState.vecesGuardadaB, uiState.jugadorControlado == 1, entrada, onTenerSuperficie, onTeclas, onControlar, Modifier.weight(1f).fillMaxHeight())
+        Column(modifier = modifier.fillMaxSize()) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                EtiquetaDeJugador(0, uiState.nombreA, uiState.vecesGuardadaA, onControlar, Modifier.weight(1f))
+                EtiquetaDeJugador(1, uiState.nombreB, uiState.vecesGuardadaB, onControlar, Modifier.weight(1f))
             }
-            controles(Modifier.fillMaxSize())
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                Row(modifier = Modifier.fillMaxSize()) {
+                    PantallaDeJugador(0, uiState.jugadorControlado == 0, entrada, onTenerSuperficie, onTeclas, onControlar, Modifier.weight(1f).fillMaxHeight())
+                    PantallaDeJugador(1, uiState.jugadorControlado == 1, entrada, onTenerSuperficie, onTeclas, onControlar, Modifier.weight(1f).fillMaxHeight())
+                }
+                controles(Modifier.fillMaxSize())
+            }
         }
     } else {
         Column(modifier = modifier.fillMaxSize()) {
-            PantallaConEtiqueta(0, uiState.nombreA, uiState.vecesGuardadaA, uiState.jugadorControlado == 0, entrada, onTenerSuperficie, onTeclas, onControlar, Modifier.weight(1f).fillMaxWidth())
-            PantallaConEtiqueta(1, uiState.nombreB, uiState.vecesGuardadaB, uiState.jugadorControlado == 1, entrada, onTenerSuperficie, onTeclas, onControlar, Modifier.weight(1f).fillMaxWidth())
+            EtiquetaDeJugador(0, uiState.nombreA, uiState.vecesGuardadaA, onControlar, Modifier.fillMaxWidth())
+            PantallaDeJugador(0, uiState.jugadorControlado == 0, entrada, onTenerSuperficie, onTeclas, onControlar, Modifier.weight(1f).fillMaxWidth())
+            EtiquetaDeJugador(1, uiState.nombreB, uiState.vecesGuardadaB, onControlar, Modifier.fillMaxWidth())
+            PantallaDeJugador(1, uiState.jugadorControlado == 1, entrada, onTenerSuperficie, onTeclas, onControlar, Modifier.weight(1f).fillMaxWidth())
             controles(Modifier.fillMaxWidth().height(260.dp))
         }
     }
 }
 
+/** El nombre y "Guardó N veces" de un jugador (ver el encargo, punto 4): una sola línea cada uno, para que nunca empuje a L/R. */
 @Composable
-private fun PantallaConEtiqueta(
+private fun EtiquetaDeJugador(jugador: Int, nombre: String, vecesGuardada: Int, onControlar: (Int) -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.clickable { onControlar(jugador) }.padding(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            "Jugador ${jugador + 1} · $nombre",
+            style = MaterialTheme.typography.labelMedium,
+            color = CompanionColors.TextPrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            if (vecesGuardada == 1) "Guardó 1 vez" else "Guardó $vecesGuardada veces",
+            style = MaterialTheme.typography.labelSmall,
+            color = CompanionColors.TextSecondary,
+            maxLines = 1,
+        )
+    }
+}
+
+/** La pantalla del emulador de un jugador, con el borde resaltado si es al que controlan los controles táctiles. */
+@Composable
+private fun PantallaDeJugador(
     jugador: Int,
-    nombre: String,
-    vecesGuardada: Int,
     controlado: Boolean,
     entrada: EntradaDeJugadores,
     onTenerSuperficie: (Int, Surface?, Int) -> Unit,
@@ -265,28 +301,18 @@ private fun PantallaConEtiqueta(
     onControlar: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    Box(
         modifier = modifier
             .clickable { onControlar(jugador) }
             .then(if (controlado) Modifier.border(BorderStroke(3.dp, CompanionColors.Primary)) else Modifier),
     ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(6.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Jugador ${jugador + 1} · $nombre", style = MaterialTheme.typography.labelMedium, color = CompanionColors.TextPrimary)
-            Text(
-                if (vecesGuardada == 1) "Guardó 1 vez" else "Guardó $vecesGuardada veces",
-                style = MaterialTheme.typography.labelSmall,
-                color = CompanionColors.TextSecondary,
-            )
-        }
-        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            PantallaDelGba(
-                jugador = jugador,
-                alTenerSuperficie = { superficie, escala -> onTenerSuperficie(jugador, superficie, escala) },
-                entrada = entrada,
-                alCambiarEntradaDeMando = { onTeclas(jugador, entrada.mascara(jugador)) },
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
+        PantallaDelGba(
+            jugador = jugador,
+            alTenerSuperficie = { superficie, escala -> onTenerSuperficie(jugador, superficie, escala) },
+            entrada = entrada,
+            alCambiarEntradaDeMando = { onTeclas(jugador, entrada.mascara(jugador)) },
+            modifier = Modifier.fillMaxSize(),
+        )
     }
 }
 
