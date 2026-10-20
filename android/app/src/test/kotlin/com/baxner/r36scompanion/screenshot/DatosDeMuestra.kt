@@ -24,7 +24,7 @@ object DatosDeMuestra {
     private const val Seadra = 117
 
     val equipoDeRojoFuego = listOf(
-        PokemonCorto(especie = "Kadabra", especieId = Kadabra, nivel = 54, mote = "Kadabra"),
+        PokemonCorto(especie = "Kadabra", especieId = Kadabra, nivel = 54, mote = "KADABRA"),
         PokemonCorto(especie = "Dragonair", especieId = Dragonair, nivel = 50),
         PokemonCorto(especie = "Nidoking", especieId = Nidoking, nivel = 52),
         PokemonCorto(especie = "Charizard", especieId = Charizard, nivel = 58, mote = "Draco"),
@@ -146,7 +146,7 @@ object DatosDeMuestra {
                 atrapados = 70,
                 dinero = 46_750,
                 equipo = listOf(
-                    PokemonCorto("Kadabra", Kadabra, 50, mote = "Kadabra"),
+                    PokemonCorto("Kadabra", Kadabra, 50, mote = "KADABRA"),
                     PokemonCorto("Dragonair", Dragonair, 50),
                     PokemonCorto("Nidoking", Nidoking, 52),
                     PokemonCorto("Charizard", Charizard, 58, mote = "Draco"),
@@ -166,7 +166,7 @@ object DatosDeMuestra {
                 atrapados = 55,
                 dinero = 5_000,
                 equipo = listOf(
-                    PokemonCorto("Kadabra", Kadabra, 40, mote = "Kadabra"),
+                    PokemonCorto("Kadabra", Kadabra, 40, mote = "KADABRA"),
                     PokemonCorto("Dragonair", Dragonair, 40),
                     PokemonCorto("Nidoking", Nidoking, 45),
                     PokemonCorto("Charizard", Charizard, 50, mote = "Draco"),

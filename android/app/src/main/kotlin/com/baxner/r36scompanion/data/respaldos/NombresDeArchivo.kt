@@ -55,3 +55,49 @@ private val FormatoDeCarpeta: DateTimeFormatter =
 
 /** El archivo tiene todos sus bytes en `0xFF`: nunca se guardó dentro del juego (docs/plan.md, "Verde Hoja... están vacías"). */
 fun esPartidaVacia(bytes: ByteArray): Boolean = bytes.isNotEmpty() && bytes.all { it == 0xFF.toByte() }
+
+/**
+ * Deduce el juego de Pokémon por el nombre de su archivo, para cuando el motor no puede leer la
+ * partida (vacía, o un hack que no reconoce) y no hay [com.baxner.r36scompanion.data.respaldos.ResumenGuardado]
+ * del que sacar el nombre real (ver el encargo de esta fase, punto 1: "Rojo Fuego (francés)" o
+ * "Verde Hoja"). `null` si no se reconoce ningún patrón: la pantalla muestra el nombre del
+ * archivo tal cual, como hoy.
+ *
+ * El idioma solo se agrega al texto cuando no es español: las partidas del usuario ya vienen tituladas
+ * en español ("Pokemon Edicion Rojo Fuego") y marcarlo sería ruido; el francés sí importa porque
+ * avisa que es una versión distinta a la que el jugador espera (ver *Rouge Feu (F)* en docs/plan.md).
+ */
+fun juegoPorNombreDeArchivo(nombreDeArchivo: String): String? {
+    val normalizado = normalizarNombre(nombreDeArchivo)
+    val juego = JuegosConocidosPorNombre.firstOrNull { (_, patrones) -> patrones.any { it in normalizado } }?.first ?: return null
+    val idioma = idiomaDeNombreDeArchivo(normalizado)
+    return if (idioma != null && idioma != "español") "$juego ($idioma)" else juego
+}
+
+private val JuegosConocidosPorNombre: List<Pair<String, List<String>>> = listOf(
+    "Rojo Fuego" to listOf("rojo fuego", "firered", "rouge feu"),
+    "Verde Hoja" to listOf("verde hoja", "leafgreen", "vert feuille"),
+    "Esmeralda" to listOf("esmeralda", "emerald", "emeraude"),
+    "Rubí" to listOf("rubi", "ruby", "rubis"),
+    "Zafiro" to listOf("zafiro", "sapphire", "saphir"),
+)
+
+/**
+ * Por marcas entre paréntesis (`(F)`, `(Fr)`, `(S)`, `(Es)`, `(E)`, `(USA)`) o la palabra "Edicion"
+ * de los títulos en español. Los nombres reales traen varias marcas separadas por comas dentro del
+ * mismo paréntesis (`(USA, Europe)`, visto en docs/plan.md con *Sound of Thunder, A*), así que se
+ * parte cada paréntesis por comas en vez de buscar el paréntesis completo tal cual.
+ */
+private fun idiomaDeNombreDeArchivo(normalizado: String): String? {
+    val marcas = Regex("""\(([^)]*)\)""").findAll(normalizado).flatMap { it.groupValues[1].split(',') }.map { it.trim() }.toSet()
+    return when {
+        "fr" in marcas -> "francés"
+        "es" in marcas -> "español"
+        "usa" in marcas -> "inglés"
+        "f" in marcas -> "francés"
+        "s" in marcas -> "español"
+        "e" in marcas -> "inglés"
+        "edicion" in normalizado -> "español"
+        else -> null
+    }
+}

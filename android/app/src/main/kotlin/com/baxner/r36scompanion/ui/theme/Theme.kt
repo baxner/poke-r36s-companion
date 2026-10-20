@@ -23,9 +23,16 @@ object CompanionColors {
     /** Marca dorada de los Pokémon shiny (el ícono de equipo en Inicio: ver `ui/sprites/`). */
     val Shiny = Color(0xFFFFD54F)
 
-    /** Medallas y puntos de Pokédex ganados/no ganados (el detalle del juego). */
-    val MedallaGanada = Primary
-    val MedallaFaltante = SurfaceHigh
+    /**
+     * Medallas ganadas/faltantes (lista de Inicio y cabecera del detalle del juego, esta última
+     * sobre la tarjeta de color del juego: rojo, verde, azul…). Dorado sobre cualquier fondo se ve
+     * bien; antes era del mismo rojo que la tarjeta de Rojo Fuego/Rubí y casi no se distinguía (lo
+     * que notó el usuario: ver el encargo de esta fase, punto 1). Las faltantes llevan un borde además
+     * del relleno oscuro, para que no se confundan con el fondo cuando éste también es oscuro.
+     */
+    val MedallaGanada = Shiny
+    val MedallaFaltante = Color(0xFF14171C)
+    val MedallaFaltanteBorde = Color(0xFF545D6E)
 }
 
 private val colors = darkColorScheme(

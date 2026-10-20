@@ -85,4 +85,34 @@ class NombresDeArchivoTest {
         assertFalse(esPartidaVacia(ByteArray(131072)))
         assertFalse(esPartidaVacia(ByteArray(0)))
     }
+
+    @Test
+    fun `juegoPorNombreDeArchivo con marca de idioma distinto al espanol la muestra`() {
+        assertEquals("Rojo Fuego (francés)", juegoPorNombreDeArchivo("Pokemon - Version Rouge Feu (F)"))
+        assertEquals("Rojo Fuego (francés)", juegoPorNombreDeArchivo("Pokemon - Version FireRed (Fr)"))
+        assertEquals("Rojo Fuego (inglés)", juegoPorNombreDeArchivo("Pokemon - FireRed Version (USA)"))
+    }
+
+    @Test
+    fun `juegoPorNombreDeArchivo en espanol no agrega la marca de idioma`() {
+        // El propio título ya viene en español ("Edicion"): marcarlo sería ruido (ver el KDoc).
+        assertEquals("Verde Hoja", juegoPorNombreDeArchivo("Pokemon Edicion Verde Hoja"))
+        assertEquals("Rojo Fuego", juegoPorNombreDeArchivo("Pokemon Edicion Rojo Fuego"))
+    }
+
+    @Test
+    fun `juegoPorNombreDeArchivo reconoce los cinco juegos por su nombre en los tres idiomas`() {
+        assertEquals("Esmeralda (inglés)", juegoPorNombreDeArchivo("Pokemon - Emerald Version (USA, Europe)"))
+        assertEquals("Esmeralda (francés)", juegoPorNombreDeArchivo("Pokemon - Version Emeraude (F)"))
+        assertEquals("Rubí (inglés)", juegoPorNombreDeArchivo("Pokemon - Ruby Version (USA)"))
+        assertEquals("Rubí (francés)", juegoPorNombreDeArchivo("Pokemon - Version Rubis (F)"))
+        assertEquals("Zafiro (inglés)", juegoPorNombreDeArchivo("Pokemon - Sapphire Version (USA)"))
+        assertEquals("Zafiro (francés)", juegoPorNombreDeArchivo("Pokemon - Version Saphir (F)"))
+    }
+
+    @Test
+    fun `juegoPorNombreDeArchivo null si no reconoce ningun patron`() {
+        assertNull(juegoPorNombreDeArchivo("Pokemon Lets Go Eevee"))
+        assertNull(juegoPorNombreDeArchivo("007 - Agente Bajo Fuego"))
+    }
 }

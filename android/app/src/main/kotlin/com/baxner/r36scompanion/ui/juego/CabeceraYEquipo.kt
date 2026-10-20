@@ -19,6 +19,7 @@ import com.baxner.r36scompanion.data.respaldos.ResumenGuardado
 import com.baxner.r36scompanion.data.textos.Textos
 import com.baxner.r36scompanion.ui.inicio.FilaDeMedallas
 import com.baxner.r36scompanion.ui.sprites.SpriteGrande
+import com.baxner.r36scompanion.ui.texto.esMoteDeEspecie
 import com.baxner.r36scompanion.ui.theme.CompanionColors
 
 /** El color de cabecera de verdad (ver [ColorDeJuego]): aquí porque solo este archivo necesita Compose para la conversión. */
@@ -82,7 +83,9 @@ private fun TarjetaDePokemonDelEquipo(pokemon: PokemonCorto, textos: Textos) {
             textAlign = TextAlign.Center,
             maxLines = 1,
         )
-        if (pokemon.mote != null) {
+        // Si el mote es el nombre por defecto (la especie en mayúsculas, como "KADABRA"), no hay
+        // nada que repetir debajo (ver el encargo de esta fase, punto 1).
+        if (pokemon.mote != null && !esMoteDeEspecie(pokemon.mote, nombreDeEspecie)) {
             Text(nombreDeEspecie, style = MaterialTheme.typography.labelSmall, color = CompanionColors.TextSecondary, textAlign = TextAlign.Center, maxLines = 1)
         }
         Text("Nv ${pokemon.nivel}", style = MaterialTheme.typography.labelSmall, color = CompanionColors.TextSecondary)

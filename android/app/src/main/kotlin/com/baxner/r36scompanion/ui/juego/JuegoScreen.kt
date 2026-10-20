@@ -94,7 +94,7 @@ fun JuegoScreen(juegoId: Long, onBack: () -> Unit, modifier: Modifier = Modifier
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(juego?.let { it.resumen?.let { r -> modulos.textos.juego(r.version) } ?: it.nombre } ?: "") },
+                title = { Text(juego?.let { nombreDeJuego(it, modulos.textos) } ?: "") },
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Regresar") } },
                 actions = {
                     IconButton(onClick = { lanzadorExportar.launch("${juego?.nombre ?: "partida"}.zip") }) {
