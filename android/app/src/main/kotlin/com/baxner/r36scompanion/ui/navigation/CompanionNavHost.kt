@@ -10,8 +10,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavType
@@ -52,11 +52,10 @@ fun CompanionApp() {
     val modulos = modulosActuales()
     val navController = rememberNavController()
 
-    LaunchedEffect(Unit) {
-        if (!modulos.preferenciasDeLaApp.introduccionVista) {
-            navController.navigate(RutaIntroduccion)
-        }
-    }
+    // La primera vez se arranca directo en la Introducción (no con un navigate desde un
+    // LaunchedEffect: si la Activity se recreaba, se volvía a apilar y había que terminarla dos
+    // veces, visto en el emulador). Se decide una sola vez por composición raíz.
+    val inicio = remember { if (modulos.preferenciasDeLaApp.introduccionVista) Destino.Inicio.ruta else RutaIntroduccion }
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val rutaActual = backStackEntry?.destination?.route
@@ -86,7 +85,7 @@ fun CompanionApp() {
             }
         },
     ) { padding ->
-        NavHost(navController = navController, startDestination = Destino.Inicio.ruta, modifier = Modifier.padding(padding)) {
+        NavHost(navController = navController, startDestination = inicio, modifier = Modifier.padding(padding)) {
             composable(Destino.Inicio.ruta) {
                 InicioScreen(
                     onAbrirJuego = { id -> navController.navigate(rutaDeJuego(id)) },
@@ -115,7 +114,18 @@ fun CompanionApp() {
                 JuegoScreen(juegoId = juegoId, onBack = { navController.popBackStack() })
             }
             composable(RutaIntroduccion) {
-                IntroduccionScreen(onTerminar = { navController.popBackStack() })
+                IntroduccionScreen(
+                    onTerminar = {
+                        // Abierta desde Ajustes se regresa; si fue el arranque, no hay a dónde
+                        // regresar: se va al inicio y la Introducción sale del historial.
+                        if (!navController.popBackStack()) {
+                            navController.navigate(Destino.Inicio.ruta) {
+                                popUpTo(RutaIntroduccion) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    },
+                )
             }
             composable(RutaDiagnostico) {
                 DiagnosticoScreen(onBack = { navController.popBackStack() })
