@@ -238,7 +238,7 @@ class JugarEnElTelefonoTest {
         jugar.llevar(juegoAId)
         jugar.guardar(juegoAId, "para descartar".toByteArray())
 
-        jugar.descartar(juegoAId)
+        jugar.prestamos.descartar(juegoAId)
 
         assertNull(jugar.prestada(juegoAId))
         assertArrayEquals(bytesOriginalesA, sesion.bytesDe(rutaA)) // la consola no se tocó
@@ -460,7 +460,7 @@ class JugarEnElTelefonoTest {
         jugar.guardar(intercambio.id, jugador = 0, bytes = "a-descartado".toByteArray())
         jugar.guardar(intercambio.id, jugador = 1, bytes = "b-descartado".toByteArray())
 
-        jugar.descartar(intercambio.id)
+        jugar.intercambiosReales.descartar(intercambio.id)
 
         assertNull(jugar.pendiente().first())
         assertArrayEquals(bytesOriginalesA, sesion.bytesDe(rutaA))
@@ -469,5 +469,23 @@ class JugarEnElTelefonoTest {
         assertEquals(2, descartadas.size)
         assertTrue(descartadas.any { it.endsWith("-a.sav") })
         assertTrue(descartadas.any { it.endsWith("-b.sav") })
+    }
+
+    @Test
+    fun `cada descartar toca solo lo suyo aunque el id coincida con lo del otro`() = runTest {
+        val jugar = jugar()
+        jugar.llevar(juegoAId)
+        jugar.guardar(juegoAId, "jugado en el telefono".toByteArray())
+
+        // Un intercambio no tiene ese id: no debe descartar el préstamo del juego A.
+        val alIntercambio = runCatching { jugar.intercambiosReales.descartar(juegoAId) }.exceptionOrNull()
+        assertTrue("$alIntercambio", alIntercambio is ErrorDeJuego.NoEstaEnElTelefono)
+        assertNotNull(jugar.prestamos.prestada(juegoAId))
+
+        jugar.prestamos.descartar(juegoAId)
+        val intercambio = jugar.empezar(juegoAId, juegoBId)
+        val alPrestamo = runCatching { jugar.prestamos.descartar(intercambio.id) }.exceptionOrNull()
+        assertTrue("$alPrestamo", alPrestamo is ErrorDeJuego.NoEstaEnElTelefono)
+        assertNotNull(jugar.intercambiosReales.pendiente().first())
     }
 }

@@ -69,8 +69,9 @@ private fun IntercambioReal.aJson() =
     IntercambioJson(id, juegoA, baseA, juegoB, baseB, empezado, vecesGuardadaA, vecesGuardadaB, estado)
 
 /**
- * [Prestamos] e [IntercambiosReales] en una sola clase (ver el encargo de la fase 5, punto 2):
- * comparten un [Mutex] y un solo archivo de estado (`carpeta/estado.json`, escrito atómico con
+ * [Prestamos] e [IntercambiosReales] sobre un solo estado (ver el encargo de la fase 5, punto 2):
+ * se usan por [prestamos] e [intercambiosReales], que comparten un [Mutex] y un solo archivo de
+ * estado (`carpeta/estado.json`, escrito atómico con
  * [escribirArchivoAtomico]) para que una partida esté a lo más en un préstamo o en un intercambio
  * real a la vez ([ErrorDeJuego.YaEstaEnElTelefono], [ErrorDeJuego.HayOtroIntercambio]).
  *
@@ -89,7 +90,7 @@ class JugarEnElTelefono(
     private val ejecutor: EjecutorDeIntercambio,
     private val lector: LectorDeResumen,
     private val reloj: Reloj,
-) : Prestamos, IntercambiosReales {
+) {
     private val mutex = Mutex()
     private val archivoEstado = File(carpeta, "estado.json")
 
@@ -101,6 +102,35 @@ class JugarEnElTelefono(
         val estadoInicial = cargarEstado()
         prestamosFlow = MutableStateFlow(estadoInicial.prestamos.map { it.aDominio() })
         pendienteFlow = MutableStateFlow(estadoInicial.intercambio?.aDominio())
+    }
+
+    /**
+     * Las dos caras de esta clase. Van como objetos aparte porque [Prestamos.descartar] e
+     * [IntercambiosReales.descartar] tienen la misma firma en la JVM (`descartar(Long)`): una
+     * sola clase no puede implementar las dos.
+     */
+    val prestamos: Prestamos = object : Prestamos {
+        override fun prestadas() = this@JugarEnElTelefono.prestadas()
+        override suspend fun prestada(juegoId: Long) = this@JugarEnElTelefono.prestada(juegoId)
+        override suspend fun avisosAntesDeLlevar(juegoId: Long) = this@JugarEnElTelefono.avisosAntesDeLlevar(juegoId)
+        override suspend fun llevar(juegoId: Long) = this@JugarEnElTelefono.llevar(juegoId)
+        override suspend fun partida(juegoId: Long) = this@JugarEnElTelefono.partida(juegoId)
+        override suspend fun guardar(juegoId: Long, bytes: ByteArray) = this@JugarEnElTelefono.guardar(juegoId, bytes)
+        override suspend fun regresar(sesion: SesionDeConsola, juegoId: Long) = this@JugarEnElTelefono.regresar(sesion, juegoId)
+        override suspend fun regresarAunqueCambio(sesion: SesionDeConsola, juegoId: Long) =
+            this@JugarEnElTelefono.regresarAunqueCambio(sesion, juegoId)
+        override suspend fun descartar(juegoId: Long) = descartarPrestamo(juegoId)
+    }
+
+    val intercambiosReales: IntercambiosReales = object : IntercambiosReales {
+        override fun pendiente() = this@JugarEnElTelefono.pendiente()
+        override suspend fun empezar(juegoA: Long, juegoB: Long) = this@JugarEnElTelefono.empezar(juegoA, juegoB)
+        override suspend fun partidas(id: Long) = this@JugarEnElTelefono.partidas(id)
+        override suspend fun guardar(id: Long, jugador: Int, bytes: ByteArray) = this@JugarEnElTelefono.guardar(id, jugador, bytes)
+        override suspend fun terminarDeJugar(id: Long) = this@JugarEnElTelefono.terminarDeJugar(id)
+        override suspend fun cambios(id: Long) = this@JugarEnElTelefono.cambios(id)
+        override suspend fun escribir(sesion: SesionDeConsola, id: Long) = this@JugarEnElTelefono.escribir(sesion, id)
+        override suspend fun descartar(id: Long) = descartarIntercambio(id)
     }
 
     private fun cargarEstado(): EstadoDeJugarJson =
@@ -123,12 +153,12 @@ class JugarEnElTelefono(
     // Prestamos
     // ---------------------------------------------------------------------------------------
 
-    override fun prestadas(): Flow<List<PartidaPrestada>> = prestamosFlow.asStateFlow()
+    fun prestadas(): Flow<List<PartidaPrestada>> = prestamosFlow.asStateFlow()
 
-    override suspend fun prestada(juegoId: Long): PartidaPrestada? =
+    suspend fun prestada(juegoId: Long): PartidaPrestada? =
         prestamosFlow.value.firstOrNull { it.juegoId == juegoId }
 
-    override suspend fun avisosAntesDeLlevar(juegoId: Long): List<AvisoAntesDeJugar> {
+    suspend fun avisosAntesDeLlevar(juegoId: Long): List<AvisoAntesDeJugar> {
         val juego = juegoRespaldado(juegoId)
         val versiones = repositorio.versiones(juegoId).first()
         val partida = versiones.firstOrNull { it.tipo == TipoDeArchivo.PARTIDA }
@@ -151,7 +181,7 @@ class JugarEnElTelefono(
         return avisos
     }
 
-    override suspend fun llevar(juegoId: Long): PartidaPrestada = mutex.withLock {
+    suspend fun llevar(juegoId: Long): PartidaPrestada = mutex.withLock {
         prestamosFlow.value.firstOrNull { it.juegoId == juegoId }?.let { return@withLock it }
         pendienteFlow.value?.let { intercambio ->
             if (intercambio.juegoA == juegoId || intercambio.juegoB == juegoId) throw ErrorDeJuego.YaEstaEnElTelefono(juegoId)
@@ -167,12 +197,12 @@ class JugarEnElTelefono(
         nuevo
     }
 
-    override suspend fun partida(juegoId: Long): ByteArray = mutex.withLock {
+    suspend fun partida(juegoId: Long): ByteArray = mutex.withLock {
         prestamoDeOError(juegoId)
         archivoDePrestamo(juegoId, "actual").readBytes()
     }
 
-    override suspend fun guardar(juegoId: Long, bytes: ByteArray): PartidaPrestada = mutex.withLock {
+    suspend fun guardar(juegoId: Long, bytes: ByteArray): PartidaPrestada = mutex.withLock {
         val prestamo = prestamoDeOError(juegoId)
         escribirArchivoAtomico(archivoDePrestamo(juegoId, "actual"), bytes)
         val nuevo = prestamo.copy(
@@ -185,10 +215,10 @@ class JugarEnElTelefono(
         nuevo
     }
 
-    override suspend fun regresar(sesion: SesionDeConsola, juegoId: Long): ResultadoDeEscritura? =
+    suspend fun regresar(sesion: SesionDeConsola, juegoId: Long): ResultadoDeEscritura? =
         regresarConBase(sesion, juegoId) { it.base }
 
-    override suspend fun regresarAunqueCambio(sesion: SesionDeConsola, juegoId: Long): ResultadoDeEscritura? =
+    suspend fun regresarAunqueCambio(sesion: SesionDeConsola, juegoId: Long): ResultadoDeEscritura? =
         regresarConBase(sesion, juegoId) { null }
 
     private suspend fun regresarConBase(
@@ -211,7 +241,6 @@ class JugarEnElTelefono(
         resultado
     }
 
-    /** Sin `override`: [Prestamos.descartar] e [IntercambiosReales.descartar] comparten la misma firma JVM (ver [descartar]). */
     private fun descartarPrestamoSinLock(juegoId: Long) {
         moverADescartadas(archivoDePrestamo(juegoId, "actual"), juegoId, sufijo = null)
         quitarPrestamoDelEstado(juegoId)
@@ -230,9 +259,9 @@ class JugarEnElTelefono(
     // IntercambiosReales
     // ---------------------------------------------------------------------------------------
 
-    override fun pendiente(): Flow<IntercambioReal?> = pendienteFlow.asStateFlow()
+    fun pendiente(): Flow<IntercambioReal?> = pendienteFlow.asStateFlow()
 
-    override suspend fun empezar(juegoA: Long, juegoB: Long): IntercambioReal = mutex.withLock {
+    suspend fun empezar(juegoA: Long, juegoB: Long): IntercambioReal = mutex.withLock {
         pendienteFlow.value?.let { throw ErrorDeJuego.HayOtroIntercambio(it.id) }
         for (juegoId in listOf(juegoA, juegoB)) {
             if (prestamosFlow.value.any { it.juegoId == juegoId }) throw ErrorDeJuego.YaEstaEnElTelefono(juegoId)
@@ -263,12 +292,12 @@ class JugarEnElTelefono(
         nuevo
     }
 
-    override suspend fun partidas(id: Long): Pair<ByteArray, ByteArray> = mutex.withLock {
+    suspend fun partidas(id: Long): Pair<ByteArray, ByteArray> = mutex.withLock {
         intercambioDeOError(id)
         archivoDeIntercambio(id, "a-actual").readBytes() to archivoDeIntercambio(id, "b-actual").readBytes()
     }
 
-    override suspend fun guardar(id: Long, jugador: Int, bytes: ByteArray): IntercambioReal = mutex.withLock {
+    suspend fun guardar(id: Long, jugador: Int, bytes: ByteArray): IntercambioReal = mutex.withLock {
         val actual = intercambioDeOError(id)
         escribirArchivoAtomico(archivoDeIntercambio(id, "${ladoDe(jugador)}-actual"), bytes)
         val nuevo = if (jugador == 0) {
@@ -281,14 +310,14 @@ class JugarEnElTelefono(
         nuevo
     }
 
-    override suspend fun terminarDeJugar(id: Long): IntercambioReal = mutex.withLock {
+    suspend fun terminarDeJugar(id: Long): IntercambioReal = mutex.withLock {
         val nuevo = intercambioDeOError(id).copy(estado = EstadoDeIntercambioReal.POR_ESCRIBIR)
         pendienteFlow.value = nuevo
         persistirEstado()
         nuevo
     }
 
-    override suspend fun cambios(id: Long): CambiosDeIntercambioReal = mutex.withLock {
+    suspend fun cambios(id: Long): CambiosDeIntercambioReal = mutex.withLock {
         val actual = intercambioDeOError(id)
         val nombreA = nombreDeArchivoDePartida(actual.juegoA)
         val nombreB = nombreDeArchivoDePartida(actual.juegoB)
@@ -306,7 +335,7 @@ class JugarEnElTelefono(
         )
     }
 
-    override suspend fun escribir(sesion: SesionDeConsola, id: Long): Unit = mutex.withLock {
+    suspend fun escribir(sesion: SesionDeConsola, id: Long): Unit = mutex.withLock {
         val actual = intercambioDeOError(id)
         val guardoA = actual.vecesGuardadaA > 0
         val guardoB = actual.vecesGuardadaB > 0
@@ -341,27 +370,15 @@ class JugarEnElTelefono(
         carpetaDeIntercambio(intercambio.id).deleteRecursively()
     }
 
-    /**
-     * [Prestamos.descartar] e [IntercambiosReales.descartar] son, en Kotlin/JVM, la misma firma
-     * (`descartar(Long): Unit`): una clase no puede tener dos métodos que solo difieran en el
-     * nombre del parámetro, así que esta única implementación sirve a las dos interfaces y decide
-     * por [id] cuál de las dos es (los espacios de ids no se mezclan en la práctica: uno es el id
-     * de un juego ya respaldado en Room, autogenerado desde 1; el otro es `reloj.ahoraMs()` del
-     * momento en que empezó el intercambio). Si [id] no es ni un préstamo ni un intercambio
-     * pendiente, [ErrorDeJuego.NoEstaEnElTelefono].
-     */
-    override suspend fun descartar(id: Long): Unit = mutex.withLock {
-        val prestamo = prestamosFlow.value.firstOrNull { it.juegoId == id }
-        if (prestamo != null) {
-            descartarPrestamoSinLock(id)
-            return@withLock
-        }
-        val intercambio = pendienteFlow.value?.takeIf { it.id == id }
-        if (intercambio != null) {
-            descartarIntercambioSinLock(intercambio)
-            return@withLock
-        }
-        throw ErrorDeJuego.NoEstaEnElTelefono(id)
+    /** [Prestamos.descartar]. */
+    suspend fun descartarPrestamo(juegoId: Long): Unit = mutex.withLock {
+        prestamoDeOError(juegoId)
+        descartarPrestamoSinLock(juegoId)
+    }
+
+    /** [IntercambiosReales.descartar]. */
+    suspend fun descartarIntercambio(id: Long): Unit = mutex.withLock {
+        descartarIntercambioSinLock(intercambioDeOError(id))
     }
 
     private fun quitarIntercambioDelEstado() {

@@ -102,6 +102,6 @@ class Modulos(context: Context) {
     /** Una sola instancia para [Prestamos] e [IntercambiosReales]: comparten su mutex y su estado (ver su KDoc). */
     private val jugarEnElTelefono =
         JugarEnElTelefono(carpetaDeJugar, repositorioDeRespaldos, escritorDePartidas, ejecutorDeIntercambio, lectorDeResumen, reloj)
-    val prestamos: Prestamos = jugarEnElTelefono
-    val intercambiosReales: IntercambiosReales = jugarEnElTelefono
+    val prestamos: Prestamos = jugarEnElTelefono.prestamos
+    val intercambiosReales: IntercambiosReales = jugarEnElTelefono.intercambiosReales
 }

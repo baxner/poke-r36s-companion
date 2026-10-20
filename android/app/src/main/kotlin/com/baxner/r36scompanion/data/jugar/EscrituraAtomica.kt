@@ -1,6 +1,7 @@
 package com.baxner.r36scompanion.data.jugar
 
 import java.io.File
+import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.UUID
@@ -16,7 +17,12 @@ internal fun escribirArchivoAtomico(destino: File, bytes: ByteArray) {
     carpeta.mkdirs()
     val temporal = File(carpeta, "${destino.name}.tmp-${UUID.randomUUID()}")
     try {
-        temporal.writeBytes(bytes)
+        // Al disco antes de renombrar: si el teléfono se apaga de golpe, queda lo viejo o lo nuevo
+        // completo, nunca un archivo vacío con el nombre bueno.
+        FileOutputStream(temporal).use { salida ->
+            salida.write(bytes)
+            salida.fd.sync()
+        }
         Files.move(temporal.toPath(), destino.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
     } catch (e: Exception) {
         temporal.delete()
