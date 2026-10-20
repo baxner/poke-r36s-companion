@@ -19,11 +19,20 @@ object CompanionColors {
     val Warning = Color(0xFFF5B74F)
     val TextPrimary = Color(0xFFEDEFF3)
     val TextSecondary = Color(0xFFA3ABB8)
+
+    /** Marca dorada de los Pokémon shiny (el ícono de equipo en Inicio: ver `ui/sprites/`). */
+    val Shiny = Color(0xFFFFD54F)
+
+    /** Medallas y puntos de Pokédex ganados/no ganados (el detalle del juego). */
+    val MedallaGanada = Primary
+    val MedallaFaltante = SurfaceHigh
 }
 
 private val colors = darkColorScheme(
     primary = CompanionColors.Primary,
+    onPrimary = Color.White,
     secondary = CompanionColors.Secondary,
+    onSecondary = Color.White,
     background = CompanionColors.Background,
     surface = CompanionColors.Surface,
     surfaceVariant = CompanionColors.SurfaceHigh,
@@ -31,6 +40,7 @@ private val colors = darkColorScheme(
     onSurface = CompanionColors.TextPrimary,
     onSurfaceVariant = CompanionColors.TextSecondary,
     error = CompanionColors.Primary,
+    onError = Color.White,
 )
 
 @Composable
