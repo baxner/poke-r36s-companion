@@ -282,6 +282,39 @@ Por el túnel adb → S24 (`rndis0` 10.101.33.64) → consola (esta vez en 10.10
   partidas se guardan en el archivo que se le da al núcleo (`core->loadSave`), y mGBA las escribe
   al guardar en el juego y al cerrar.
 
+### Fase 5: el emulador dentro de la app (2026-10-20)
+
+- **Módulo `:emulador`** (`android/emulador/`): mGBA 0.10.5 compilado por el NDK como librería
+  estática (`scripts/bajar-mgba.sh` baja el código fijado por SHA-256 a `third_party/`, que no se
+  versiona) y una capa en C (`src/main/cpp/emulador.c`). En Kotlin, la interfaz `Sala` (uno o dos
+  GBA) y su implementación `SalaDeJuego`.
+- **Cada GBA en su hilo de mGBA** (`mCoreThread`); el sonido sale por AAudio y marca el ritmo,
+  como en mGBA de escritorio (si no hay sonido, cada juego duerme hasta su siguiente cuadro). La
+  pantalla se dibuja en una `Surface` ampliada un número entero de veces, sin suavizar.
+- **La partida va en memoria, de 128 KB fijos**, igual que el núcleo de RetroArch de la R36S
+  (`VFileFromMemory`, como `libretro.c`): lo que sale es byte por byte lo que ese núcleo espera.
+  Solo se entrega lo que el juego **terminó** de guardar (aviso `savedataUpdated` de mGBA), nunca
+  una partida a medio escribir.
+- **Sin BIOS de Nintendo**: la de mGBA (HLE), directo al juego.
+- **El cable link** son los callbacks de `MultiplayerController` de Qt pasados a C. Probado con
+  una ROM mínima armada en la propia prueba (ARM a mano, nada de Nintendo): dos juegos en modo
+  multijugador se pasan 0x1111 y 0x2222 y cada uno lo guarda en su SRAM. Ojo, como en el
+  hardware: con una sola consola conectada mGBA dice "listos" y "jugador 2" hasta que llega la
+  otra, así que el papel hay que revisarlo en cada vuelta (los juegos de verdad lo hacen).
+- **Pruebas** (`connectedDebugAndroidTest` del módulo, 9, estables en 4 vueltas): guarda,
+  conserva el tamaño y el resto del `.srm`, pausa, 60 cuadros por segundo, pinta rojo puro en la
+  `Surface`, el cable pasa datos, sin cable no, cerrar sin arrancar, y rechaza lo que no es ROM.
+- **El `.state.auto` de RetroArch**: el teléfono empieza desde lo último que se guardó dentro
+  del juego, no desde donde se quedó la consola. RetroArch escribe la partida y el estado juntos
+  al cerrar el juego, así que por las fechas no se sabe si hay avance solo en el estado: la app
+  avisa siempre que haya uno de la misma sesión. (Mejora posible: cargar el estado de RetroArch en
+  mGBA, si la versión del núcleo de la consola es compatible.)
+- **Alrededor del emulador** (`data/jugar/Jugar.kt`): `RomsDelTelefono` (la ROM se copia una vez
+  de la consola, `.gba` o `.zip`; `.7z` no), `Prestamos` ("seguir jugando": cada vez que el juego
+  guarda se escribe a disco y al regresarla se exige la base de la que salió) e
+  `IntercambiosReales` (las dos partidas se escriben con `EjecutorDeIntercambio`). Una partida
+  está, a lo más, en un préstamo o en un intercambio a la vez.
+
 Reparto igual que en Vigía: Opus diseña, revisa e integra; Sonnet implementa módulos bien
 especificados; Haiku solo tareas mecánicas. Máximo dos subagentes a la vez, cada uno en su
 worktree. Los nombres de Pokémon, movimientos y objetos en español salen del propio PKHeX, que
