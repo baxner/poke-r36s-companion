@@ -19,3 +19,9 @@ fun formatoDeDuracionEnMinutos(totalDeMinutos: Int): String {
     val minutos = totalDeMinutos % 60
     return formatoDeHorasYMinutos(horas, minutos)
 }
+
+/** "2.3 MB": el tamaño de una ROM o de un respaldo, en Ajustes → "Juegos en el teléfono" (fase 5). */
+fun formatoDeTamanoEnMb(bytes: Long): String {
+    val mb = bytes / (1024.0 * 1024.0)
+    return String.format(Locale("es", "MX"), "%.1f MB", mb)
+}

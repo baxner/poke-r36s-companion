@@ -83,7 +83,7 @@ interface EjecutorDeIntercambio {
     /**
      * Escribe las dos partidas en la consola con las reglas de arriba. [baseA] y [baseB] son los
      * SHA-256 de las versiones de las que salió el intercambio (si la consola tiene otra cosa, no
-     * escribe nada).
+     * escribe nada); null si ese juego no tenía partida (ver `data/jugar/`, intercambios reales).
      */
-    suspend fun escribirEnLaConsola(sesion: SesionDeConsola, juegoA: Long, baseA: String, juegoB: Long, baseB: String, partidas: PartidasIntercambiadas)
+    suspend fun escribirEnLaConsola(sesion: SesionDeConsola, juegoA: Long, baseA: String?, juegoB: Long, baseB: String?, partidas: PartidasIntercambiadas)
 }

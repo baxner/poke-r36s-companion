@@ -14,9 +14,9 @@ class EjecutorDeIntercambioConEscritor(private val escritor: EscritorDePartidas)
     override suspend fun escribirEnLaConsola(
         sesion: SesionDeConsola,
         juegoA: Long,
-        baseA: String,
+        baseA: String?,
         juegoB: Long,
-        baseB: String,
+        baseB: String?,
         partidas: PartidasIntercambiadas,
     ) {
         val resultadoA = escritor.escribir(sesion, juegoA, partidas.partidaA, baseA)

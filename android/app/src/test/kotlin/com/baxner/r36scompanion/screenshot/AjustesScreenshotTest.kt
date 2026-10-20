@@ -19,7 +19,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** Revisión visual de Ajustes (ver el encargo, punto 7 y 9): con consola fijada y sin ninguna. */
+/** Revisión visual de Ajustes (ver el encargo, punto 7 y 9, y el de la fase 5, punto 5: "Juegos en el teléfono"). */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [35], qualifiers = "+h1500dp")
@@ -43,6 +43,7 @@ class AjustesScreenshotTest {
                     onAbrirIntroduccion = {},
                     onAbrirDiagnostico = {},
                     onAbrirLicencias = {},
+                    onAbrirJuegosEnElTelefono = {},
                 )
             }
         }

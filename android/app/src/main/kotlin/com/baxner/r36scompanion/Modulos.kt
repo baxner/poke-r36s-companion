@@ -19,6 +19,11 @@ import com.baxner.r36scompanion.data.intercambio.EjecutorDeIntercambio
 import com.baxner.r36scompanion.data.intercambio.EjecutorDeIntercambioConEscritor
 import com.baxner.r36scompanion.data.intercambio.Intercambios
 import com.baxner.r36scompanion.data.intercambio.IntercambiosConMotor
+import com.baxner.r36scompanion.data.jugar.IntercambiosReales
+import com.baxner.r36scompanion.data.jugar.JugarEnElTelefono
+import com.baxner.r36scompanion.data.jugar.Prestamos
+import com.baxner.r36scompanion.data.jugar.RomsDelTelefono
+import com.baxner.r36scompanion.data.jugar.RomsDelTelefonoEnArchivos
 import com.baxner.r36scompanion.data.motor.MotorPartidas
 import com.baxner.r36scompanion.data.motor.MotorWebView
 import com.baxner.r36scompanion.data.pokedex.PokedexGlobal
@@ -35,6 +40,8 @@ import com.baxner.r36scompanion.data.respaldos.RepositorioDeRespaldos
 import com.baxner.r36scompanion.data.respaldos.RepositorioDeRespaldosImpl
 import com.baxner.r36scompanion.data.respaldos.RespaldosDatabase
 import com.baxner.r36scompanion.data.textos.Textos
+import com.baxner.r36scompanion.emulador.AbridorDeSalas
+import com.baxner.r36scompanion.emulador.SalaDeJuego
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,7 +71,8 @@ class Modulos(context: Context) {
     val preferenciasDeConsola: PreferenciasDeConsola = PreferenciasDeConsolaCifradas(appContext)
     val preferenciasDeLaApp: PreferenciasDeLaApp = PreferenciasDeLaAppSharedPrefs(appContext)
 
-    private val alcanceDeProceso = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    /** Para lo que tiene que terminar aunque se cierre la pantalla (p. ej. guardar la última partida al salir del emulador). */
+    val alcanceDeProceso = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     /** Una sola conexión para toda la app (ver el KDoc de la clase). */
     val conexion = ConexionConConsola(anclaje, buscador, conector, preferenciasDeConsola, alcanceDeProceso)
@@ -85,4 +93,15 @@ class Modulos(context: Context) {
     val intercambios: Intercambios = IntercambiosConMotor(motorPartidas)
     val ejecutorDeIntercambio: EjecutorDeIntercambio = EjecutorDeIntercambioConEscritor(escritorDePartidas)
     val pokedexGlobal: PokedexGlobal = PokedexGlobalConRespaldos(repositorioDeRespaldos, banco, motorPartidas, textos::lugarGen3DesdeIngles)
+
+    // Fase 5: jugar en el teléfono (ver data/jugar/Jugar.kt). El emulador es mGBA (:emulador).
+    val abridorDeSalas: AbridorDeSalas = SalaDeJuego.abridor
+    private val carpetaDeJugar = File(appContext.noBackupFilesDir, "jugar")
+    val romsDelTelefono: RomsDelTelefono = RomsDelTelefonoEnArchivos(File(carpetaDeJugar, "roms"))
+
+    /** Una sola instancia para [Prestamos] e [IntercambiosReales]: comparten su mutex y su estado (ver su KDoc). */
+    private val jugarEnElTelefono =
+        JugarEnElTelefono(carpetaDeJugar, repositorioDeRespaldos, escritorDePartidas, ejecutorDeIntercambio, lectorDeResumen, reloj)
+    val prestamos: Prestamos = jugarEnElTelefono.prestamos
+    val intercambiosReales: IntercambiosReales = jugarEnElTelefono.intercambiosReales
 }

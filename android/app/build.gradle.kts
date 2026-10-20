@@ -93,6 +93,9 @@ dependencies {
     implementation(libs.androidx.webkit)
     implementation(libs.androidx.security.crypto)
 
+    // El emulador de GBA (mGBA) para el intercambio real y "seguir jugando" (fase 5).
+    implementation(project(":emulador"))
+
     // Consola por SSH/SFTP (ver data/consola/).
     implementation(libs.jsch)
     implementation(libs.bouncycastle.prov)

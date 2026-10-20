@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "PokeR36SCompanion"
 include(":app")
+include(":emulador")

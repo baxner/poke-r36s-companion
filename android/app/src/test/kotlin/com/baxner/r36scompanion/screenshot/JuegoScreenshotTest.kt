@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.baxner.r36scompanion.data.jugar.PartidaPrestada
 import com.baxner.r36scompanion.data.textos.Textos
 import com.baxner.r36scompanion.ui.juego.ConfirmarRestaurarContent
 import com.baxner.r36scompanion.ui.juego.JuegoScreenContent
@@ -24,8 +25,10 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Revisión visual del detalle de un juego (ver el encargo, punto 4 y 9): Rojo Fuego completo (con
- * historial y estados), Verde Hoja vacía y un hack. Regenerar con `./gradlew :app:testDebugUnitTest`.
+ * Revisión visual del detalle de un juego (ver el encargo, punto 4 y 9, y el de la fase 5, punto
+ * 5): Rojo Fuego completo (con historial y estados, ya con el botón de "seguir jugando" por ser
+ * de GBA), Verde Hoja vacía, un hack, y el aviso de partida prestada. Regenerar con
+ * `./gradlew :app:testDebugUnitTest`.
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -45,6 +48,8 @@ class JuegoScreenshotTest {
                     textos = textos,
                     versionAConfirmar = versionAConfirmar,
                     onEditar = {},
+                    onSeguirJugando = {},
+                    onRegresarDeInmediato = {},
                     onPedirRestaurar = {},
                     onConfirmarRestaurar = {},
                     onCancelarRestaurar = {},
@@ -62,7 +67,7 @@ class JuegoScreenshotTest {
     // simulado si no se agranda también con `@Config(qualifiers = "+hNNNNdp")` (ver
     // InicioScreenshotTest y DeviceDetailScreenshotTest de Vigía).
     @Test
-    @Config(qualifiers = "+h4800dp")
+    @Config(qualifiers = "+h5000dp")
     fun rojoFuegoCompleto() = capturar(
         "rojo_fuego",
         JuegoUiState(
@@ -71,10 +76,11 @@ class JuegoScreenshotTest {
             versionesDeEstados = DatosDeMuestra.estadosDeRojoFuego,
             conectada = true,
         ),
-        altura = 4_800.dp,
+        altura = 5_000.dp,
     )
 
     @Test
+    @Config(qualifiers = "+h1100dp")
     fun verdeHojaVacia() = capturar(
         "verde_hoja_vacia",
         JuegoUiState(
@@ -83,10 +89,11 @@ class JuegoScreenshotTest {
             versionesDeEstados = DatosDeMuestra.estadosDeVerdeHoja,
             conectada = false,
         ),
-        altura = 900.dp,
+        altura = 1_100.dp,
     )
 
     @Test
+    @Config(qualifiers = "+h900dp")
     fun hackSoloRespaldo() = capturar(
         "hack",
         JuegoUiState(
@@ -94,7 +101,29 @@ class JuegoScreenshotTest {
             historialDePartida = historialDePartida(DatosDeMuestra.historialDelHack, textos),
             conectada = true,
         ),
-        altura = 700.dp,
+        altura = 900.dp,
+    )
+
+    // Fase 5 (ver su encargo, punto 5): la partida ya está prestada en el teléfono.
+    @Test
+    @Config(qualifiers = "+h1300dp")
+    fun partidaPrestada() = capturar(
+        "partida_prestada",
+        JuegoUiState(
+            juego = DatosDeMuestra.juegoRojoFuego,
+            historialDePartida = historialDePartida(DatosDeMuestra.historialDeRojoFuego, textos),
+            versionesDeEstados = DatosDeMuestra.estadosDeRojoFuego,
+            conectada = true,
+            prestada = PartidaPrestada(
+                juegoId = DatosDeMuestra.juegoRojoFuego.id,
+                base = "abc",
+                desde = 1_760_000_000_000,
+                actual = "abc",
+                vecesGuardada = 2,
+                ultimaVezGuardada = 1_760_000_500_000,
+            ),
+        ),
+        altura = 1_300.dp,
     )
 
     // El `AlertDialog` de "Restaurar esta versión" no asienta en Robolectric: se captura el

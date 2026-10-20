@@ -26,6 +26,7 @@ import androidx.navigation.navArgument
 import com.baxner.r36scompanion.data.editor.Casilla
 import com.baxner.r36scompanion.data.editor.OrigenDeCasilla
 import com.baxner.r36scompanion.ui.ajustes.AjustesScreen
+import com.baxner.r36scompanion.ui.ajustes.JuegosEnElTelefonoScreen
 import com.baxner.r36scompanion.ui.ajustes.LicenciasScreen
 import com.baxner.r36scompanion.ui.banco.BancoDepositoScreen
 import com.baxner.r36scompanion.ui.banco.BancoRetiroScreen
@@ -38,6 +39,8 @@ import com.baxner.r36scompanion.ui.editor.PokemonEditorScreen
 import com.baxner.r36scompanion.ui.inicio.InicioScreen
 import com.baxner.r36scompanion.ui.intercambio.IntercambioScreen
 import com.baxner.r36scompanion.ui.introduccion.IntroduccionScreen
+import com.baxner.r36scompanion.ui.jugar.IntercambioRealScreen
+import com.baxner.r36scompanion.ui.jugar.SeguirJugandoScreen
 import com.baxner.r36scompanion.ui.juego.JuegoScreen
 import com.baxner.r36scompanion.ui.modulosActuales
 import com.baxner.r36scompanion.ui.pokedex.PokedexDetalleScreen
@@ -55,6 +58,7 @@ private val destinosDePrimerNivel = listOf(Destino.Inicio, Destino.Pokedex, Dest
 private const val RutaIntroduccion = "introduccion"
 private const val RutaDiagnostico = "diagnostico"
 private const val RutaLicencias = "ajustes/licencias"
+private const val RutaJuegosEnElTelefono = "ajustes/juegos-en-el-telefono"
 private const val RutaJuego = "juego/{juegoId}"
 private fun rutaDeJuego(id: Long) = "juego/$id"
 private const val RutaPokedexDetalle = "pokedex/{especie}"
@@ -74,11 +78,20 @@ private const val RutaPokemonEnEditor = "editor/{juegoId}/pokemon/{origen}/{posi
 private fun rutaDePokemonEnEditor(juegoId: Long, casilla: Casilla) =
     "editor/$juegoId/pokemon/${casilla.origen.name}/${casilla.posicion}/${casilla.caja ?: -1}"
 
+// Fase 5 (ver su encargo, punto 5): "seguir jugando en el teléfono" y el intercambio real, sin
+// barra inferior. `regresar` en `RutaJugar` es para el botón "Regresar a la consola" de Inicio y
+// del detalle del juego, sin volver a jugar (ver el KDoc de `SeguirJugandoViewModel`).
+private const val RutaJugar = "jugar/{juegoId}?regresar={regresar}"
+private fun rutaDeJugar(juegoId: Long, regresar: Boolean = false) = "jugar/$juegoId?regresar=$regresar"
+private const val RutaIntercambioReal = "intercambio-real/{juegoA}/{juegoB}"
+private fun rutaDeIntercambioReal(juegoA: Long, juegoB: Long) = "intercambio-real/$juegoA/$juegoB"
+
 /**
- * Raíz de la app (ver el encargo, punto 2, y el de la fase 4): barra inferior de
- * Inicio/Pokédex/Banco/Ajustes + el detalle de un juego, de una especie, el depósito y retiro del
- * banco, el intercambio rápido, Introducción, Diagnóstico y Licencias, sin barra. La Introducción
- * se abre sola la primera vez (ver
+ * Raíz de la app (ver el encargo, punto 2, el de la fase 4, y el de la fase 5, punto 5): barra
+ * inferior de Inicio/Pokédex/Banco/Ajustes + el detalle de un juego, de una especie, el depósito
+ * y retiro del banco, los dos intercambios (rápido y real), "seguir jugando en el teléfono",
+ * Introducción, Diagnóstico, Licencias y "Juegos en el teléfono", sin barra. La Introducción se
+ * abre sola la primera vez (ver
  * [com.baxner.r36scompanion.data.preferencias.PreferenciasDeLaApp.introduccionVista]).
  */
 @Composable
@@ -131,6 +144,9 @@ fun CompanionApp() {
                         }
                     },
                     onVerDiagnostico = { navController.navigate(RutaDiagnostico) },
+                    onSeguirJugando = { id -> navController.navigate(rutaDeJugar(id)) },
+                    onRegresarDeInmediato = { id -> navController.navigate(rutaDeJugar(id, regresar = true)) },
+                    onContinuarIntercambioReal = { a, b -> navController.navigate(rutaDeIntercambioReal(a, b)) },
                 )
             }
             composable(Destino.Pokedex.ruta) {
@@ -148,6 +164,7 @@ fun CompanionApp() {
                     onAbrirIntroduccion = { navController.navigate(RutaIntroduccion) },
                     onAbrirDiagnostico = { navController.navigate(RutaDiagnostico) },
                     onAbrirLicencias = { navController.navigate(RutaLicencias) },
+                    onAbrirJuegosEnElTelefono = { navController.navigate(RutaJuegosEnElTelefono) },
                 )
             }
             composable(
@@ -168,7 +185,10 @@ fun CompanionApp() {
                 BancoRetiroScreen(pokemonId = pokemonId, onTerminar = { navController.popBackStack() })
             }
             composable(RutaIntercambio) {
-                IntercambioScreen(onTerminar = { navController.popBackStack() })
+                IntercambioScreen(
+                    onTerminar = { navController.popBackStack() },
+                    onIrAIntercambioReal = { juegoA, juegoB -> navController.navigate(rutaDeIntercambioReal(juegoA, juegoB)) },
+                )
             }
             composable(
                 route = RutaJuego,
@@ -179,6 +199,8 @@ fun CompanionApp() {
                     juegoId = juegoId,
                     onBack = { navController.popBackStack() },
                     onEditar = { id -> navController.navigate(rutaDeEditor(id)) },
+                    onSeguirJugando = { id -> navController.navigate(rutaDeJugar(id)) },
+                    onRegresarDeInmediato = { id -> navController.navigate(rutaDeJugar(id, regresar = true)) },
                 )
             }
             composable(
@@ -249,6 +271,31 @@ fun CompanionApp() {
             }
             composable(RutaLicencias) {
                 LicenciasScreen(onBack = { navController.popBackStack() })
+            }
+            composable(RutaJuegosEnElTelefono) {
+                JuegosEnElTelefonoScreen(onBack = { navController.popBackStack() })
+            }
+            composable(
+                route = RutaJugar,
+                arguments = listOf(
+                    navArgument("juegoId") { type = NavType.LongType },
+                    navArgument("regresar") { type = NavType.BoolType; defaultValue = false },
+                ),
+            ) { entry ->
+                val juegoId = entry.arguments?.getLong("juegoId") ?: -1L
+                val regresar = entry.arguments?.getBoolean("regresar") ?: false
+                SeguirJugandoScreen(juegoId = juegoId, regresarAlAbrir = regresar, onBack = { navController.popBackStack() })
+            }
+            composable(
+                route = RutaIntercambioReal,
+                arguments = listOf(
+                    navArgument("juegoA") { type = NavType.LongType },
+                    navArgument("juegoB") { type = NavType.LongType },
+                ),
+            ) { entry ->
+                val juegoA = entry.arguments?.getLong("juegoA") ?: -1L
+                val juegoB = entry.arguments?.getLong("juegoB") ?: -1L
+                IntercambioRealScreen(juegoA = juegoA, juegoB = juegoB, onTerminar = { navController.popBackStack() })
             }
         }
     }
