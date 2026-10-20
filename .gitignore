@@ -16,3 +16,9 @@ android/app/build/
 
 # Generado por scripts/bajar-sprites.sh (sprites de Nintendo, uso personal).
 android/app/src/main/assets/sprites/
+
+# Generado por scripts/bajar-mgba.sh (código de mGBA 0.10.5, MPL-2.0).
+third_party/
+android/emulador/build/
+android/emulador/.cxx/
+android/app/.cxx/
