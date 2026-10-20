@@ -44,7 +44,10 @@ fun TarjetaDeConexion(
     val info = infoDeTarjeta(estado)
     TarjetaDeSeccion(modifier = modifier) {
         FilaDeNivel(nivel = info.nivel, titulo = info.titulo, subtitulo = info.cuerpo)
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        // En columna, no en fila: "Sí es mi consola, la reinstalé" + "Ver diagnóstico" lado a
+        // lado no caben en un teléfono angosto y el segundo texto se corta en varias líneas
+        // (visto en la captura de huella_distinta.png antes de este cambio).
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             when (info.accion) {
                 AccionDeTarjeta.ACTIVAR_ANCLAJE -> BotonConIcono("Activar anclaje de USB", Icons.Default.WifiTethering, onActivarAnclaje)
                 AccionDeTarjeta.REINTENTAR -> BotonConIcono("Reintentar", Icons.Default.Refresh, onReintentar)

@@ -30,7 +30,9 @@ object CompanionColors {
 
 private val colors = darkColorScheme(
     primary = CompanionColors.Primary,
+    onPrimary = Color.White,
     secondary = CompanionColors.Secondary,
+    onSecondary = Color.White,
     background = CompanionColors.Background,
     surface = CompanionColors.Surface,
     surfaceVariant = CompanionColors.SurfaceHigh,
@@ -38,6 +40,7 @@ private val colors = darkColorScheme(
     onSurface = CompanionColors.TextPrimary,
     onSurfaceVariant = CompanionColors.TextSecondary,
     error = CompanionColors.Primary,
+    onError = Color.White,
 )
 
 @Composable
