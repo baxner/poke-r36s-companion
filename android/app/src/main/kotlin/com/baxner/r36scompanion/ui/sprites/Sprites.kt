@@ -11,6 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -44,6 +47,29 @@ fun IconoDeEquipo(especieId: Int?, shiny: Boolean, modifier: Modifier = Modifier
                     .background(CompanionColors.Shiny, CircleShape),
             )
         }
+    }
+}
+
+/**
+ * El ícono de una especie en la cuadrícula de la Pokédex global: de `icono/`, en gris y
+ * semitransparente si [laTiene] es false (filtros "me faltan" / "registradas pero ya no" del
+ * encargo, punto 2). Siempre con [especieId] (1-386): a diferencia de [IconoDeEquipo] no hay
+ * huevos ni especies desconocidas que mostrar aquí.
+ */
+@Composable
+fun IconoDePokedex(especieId: Int, laTiene: Boolean, modifier: Modifier = Modifier, tamano: Dp = 48.dp, contentDescription: String? = null) {
+    val context = LocalContext.current
+    val bitmap = remember(especieId) { CargadorDeSprites.obtener(context, "icono", especieId) }
+    if (bitmap != null) {
+        val colorFiltro = if (laTiene) null else ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+        Image(
+            bitmap = bitmap,
+            contentDescription = contentDescription,
+            colorFilter = colorFiltro,
+            modifier = modifier.size(tamano).alpha(if (laTiene) 1f else 0.45f),
+        )
+    } else {
+        CirculoConNumero(especieId, tamano, modifier)
     }
 }
 

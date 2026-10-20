@@ -1,6 +1,9 @@
 package com.baxner.r36scompanion
 
 import android.content.Context
+import com.baxner.r36scompanion.data.banco.Banco
+import com.baxner.r36scompanion.data.banco.BancoConMotor
+import com.baxner.r36scompanion.data.banco.BancoDatabase
 import com.baxner.r36scompanion.data.conexion.ConexionConConsola
 import com.baxner.r36scompanion.data.conexion.PreferenciasDeConsola
 import com.baxner.r36scompanion.data.conexion.PreferenciasDeConsolaCifradas
@@ -10,8 +13,16 @@ import com.baxner.r36scompanion.data.consola.BuscadorDeConsola
 import com.baxner.r36scompanion.data.consola.BuscadorPorAnclaje
 import com.baxner.r36scompanion.data.consola.ConectorDeConsola
 import com.baxner.r36scompanion.data.consola.ConectorDeConsolaJsch
+import com.baxner.r36scompanion.data.editor.EditorDePartidas
+import com.baxner.r36scompanion.data.editor.EditorDePartidasConMotor
+import com.baxner.r36scompanion.data.intercambio.EjecutorDeIntercambio
+import com.baxner.r36scompanion.data.intercambio.EjecutorDeIntercambioConEscritor
+import com.baxner.r36scompanion.data.intercambio.Intercambios
+import com.baxner.r36scompanion.data.intercambio.IntercambiosConMotor
 import com.baxner.r36scompanion.data.motor.MotorPartidas
 import com.baxner.r36scompanion.data.motor.MotorWebView
+import com.baxner.r36scompanion.data.pokedex.PokedexGlobal
+import com.baxner.r36scompanion.data.pokedex.PokedexGlobalConRespaldos
 import com.baxner.r36scompanion.data.preferencias.PreferenciasDeLaApp
 import com.baxner.r36scompanion.data.preferencias.PreferenciasDeLaAppSharedPrefs
 import com.baxner.r36scompanion.data.respaldos.AlmacenDeBlobs
@@ -65,4 +76,12 @@ class Modulos(context: Context) {
 
     val repositorioDeRespaldos: RepositorioDeRespaldos = RepositorioDeRespaldosImpl(db, almacenDeBlobs, lectorDeResumen, reloj)
     val escritorDePartidas: EscritorDePartidas = EscritorDePartidasImpl(db, almacenDeBlobs, lectorDeResumen, reloj)
+
+    // Fase 4: banco, intercambio rápido y Pokédex global (ver docs/plan.md y el encargo de esta fase).
+    private val bancoDb = BancoDatabase.crear(appContext)
+    val banco: Banco = BancoConMotor(bancoDb, motorPartidas, reloj)
+    val editorDePartidas: EditorDePartidas = EditorDePartidasConMotor(motorPartidas)
+    val intercambios: Intercambios = IntercambiosConMotor(motorPartidas)
+    val ejecutorDeIntercambio: EjecutorDeIntercambio = EjecutorDeIntercambioConEscritor(escritorDePartidas)
+    val pokedexGlobal: PokedexGlobal = PokedexGlobalConRespaldos(repositorioDeRespaldos, banco, motorPartidas)
 }
