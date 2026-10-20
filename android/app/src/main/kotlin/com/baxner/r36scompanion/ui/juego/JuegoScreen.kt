@@ -159,10 +159,10 @@ fun JuegoScreenContent(
             item { TarjetaDeResultadoDeRestaurar(resultado, onDescartarResultado) }
         }
         uiState.errorDeRestaurar?.let { mensaje ->
-            item { TarjetaDescartable(onDescartarErrorDeRestaurar) { FilaDeNivel(NivelVisual.ERROR, "No se pudo restaurar", mensaje) } }
+            item { TarjetaDescartable(onDescartarErrorDeRestaurar) { FilaDeNivel(nivel = NivelVisual.ERROR, titulo = "No se pudo restaurar", subtitulo = mensaje) } }
         }
         uiState.errorDeExportar?.let { mensaje ->
-            item { TarjetaDescartable(onDescartarErrorDeExportar) { FilaDeNivel(NivelVisual.ERROR, "No se pudo exportar", mensaje) } }
+            item { TarjetaDescartable(onDescartarErrorDeExportar) { FilaDeNivel(nivel = NivelVisual.ERROR, titulo = "No se pudo exportar", subtitulo = mensaje) } }
         }
 
         if (uiState.historialDePartida.isNotEmpty()) {
@@ -201,7 +201,7 @@ private fun TituloDeSeccionJuego(texto: String) {
 private fun TarjetaDeResultadoDeRestaurar(resultado: ResultadoDeEscritura, onDescartar: () -> Unit) {
     TarjetaDescartable(onDescartar) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            FilaDeNivel(NivelVisual.OK, "Listo: se restauró esa versión en la consola")
+            FilaDeNivel(nivel = NivelVisual.OK, titulo = "Listo: se restauró esa versión en la consola")
             if (resultado.estadosApartados.isNotEmpty()) {
                 Text(
                     "Se apartó el estado automático: ${resultado.estadosApartados.joinToString { it.substringAfterLast('/') }}",
@@ -211,9 +211,9 @@ private fun TarjetaDeResultadoDeRestaurar(resultado: ResultadoDeEscritura, onDes
             }
             if (resultado.estadosManuales.isNotEmpty()) {
                 FilaDeNivel(
-                    NivelVisual.AVISO,
-                    "Todavía hay estados guardados a mano",
-                    "Si cargas uno de estos en la consola perderás lo restaurado: " +
+                    nivel = NivelVisual.AVISO,
+                    titulo = "Todavía hay estados guardados a mano",
+                    subtitulo = "Si cargas uno de estos en la consola perderás lo restaurado: " +
                         resultado.estadosManuales.joinToString { it.substringAfterLast('/') },
                 )
             }

@@ -3,8 +3,11 @@ package com.baxner.r36scompanion.ui.juego
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,15 +57,15 @@ fun FilaDeEstado(version: VersionRespaldada, modifier: Modifier = Modifier) {
 fun ConfirmarRestaurarContent(onConfirmar: () -> Unit, onCancelar: () -> Unit, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Text("Restaurar esta versión en la consola", style = MaterialTheme.typography.titleMedium)
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             "Antes de escribir, se respalda lo que haya ahora mismo en la consola. Tienes que haber cerrado el juego en RetroArch: " +
                 "si está abierto, no se puede escribir. Se aparta (no se borra) el estado automático de este juego, para que " +
                 "RetroArch no vuelva a cargar lo de antes la próxima vez que lo abras.",
         )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            androidx.compose.material3.OutlinedButton(onClick = onCancelar) { Text("Cancelar") }
+            OutlinedButton(onClick = onCancelar) { Text("Cancelar") }
             Button(onClick = onConfirmar) { Text("Restaurar") }
         }
     }
