@@ -1,7 +1,5 @@
 package com.baxner.r36scompanion.data.gen3
 
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -82,42 +80,5 @@ class PartidaGen3Test {
         assertEquals(78, partida.pokedex().atrapados.size)
         assertEquals(111, partida.pokedex().vistos.size)
         assertTrue(partida.pokedex().vistos.containsAll(partida.pokedex().atrapados))
-    }
-}
-
-/** Una partida de Gen 3 armada a mano: secciones con datos en cero, pies correctos y sumas recalculadas. */
-private class PartidaSintetica(private val contadores: Pair<Long, Long>, private val rotacion: Int) {
-    private val bytes = ByteArray(0x20000)
-    private val longitudes = intArrayOf(0xF2C, 0xF80, 0xF80, 0xF80, 0xF08, 0xF80, 0xF80, 0xF80, 0xF80, 0xF80, 0xF80, 0xF80, 0xF80, 0x7D0)
-
-    private fun inicio(ranura: Int, id: Int) = ranura * 0xE000 + ((id + rotacion) % 14) * 0x1000
-
-    fun conPokedex(ranura: Int, atrapados: Set<Int>, vistos: Set<Int>) = apply {
-        val s0 = inicio(ranura, 0)
-        atrapados.forEach { e -> bytes[s0 + 0x28 + (e - 1) / 8] = (bytes[s0 + 0x28 + (e - 1) / 8].toInt() or (1 shl ((e - 1) % 8))).toByte() }
-        vistos.forEach { e -> bytes[s0 + 0x5C + (e - 1) / 8] = (bytes[s0 + 0x5C + (e - 1) / 8].toInt() or (1 shl ((e - 1) % 8))).toByte() }
-    }
-
-    fun conCasilla(ranura: Int, caja: Int, casilla: Int, relleno: Int) = apply {
-        val enAlmacen = 4 + (caja * 30 + casilla) * 80
-        repeat(80) { i ->
-            val p = enAlmacen + i
-            bytes[inicio(ranura, 5 + p / 0xF80) + p % 0xF80] = relleno.toByte()
-        }
-    }
-
-    fun bytes(): ByteArray {
-        for (ranura in 0..1) {
-            val contador = if (ranura == 0) contadores.first else contadores.second
-            for (id in 0 until 14) {
-                val s = inicio(ranura, id)
-                val pie = ByteBuffer.wrap(bytes, s + 0xFF4, 12).order(ByteOrder.LITTLE_ENDIAN)
-                pie.putShort(id.toShort())
-                pie.putShort(PartidaGen3.sumaDeComprobacion(bytes, s, longitudes[id]).toShort())
-                pie.putInt(0x08012025)
-                pie.putInt(contador.toInt())
-            }
-        }
-        return bytes.copyOf()
     }
 }
