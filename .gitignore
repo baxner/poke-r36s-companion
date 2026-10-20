@@ -22,3 +22,5 @@ third_party/
 android/emulador/build/
 android/emulador/.cxx/
 android/app/.cxx/
+# Juegos y partidas reales del usuario para las pruebas del emulador (ver JuegoRealTest).
+android/emulador/src/androidTest/assets/muestras/

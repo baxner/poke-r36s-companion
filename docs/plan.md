@@ -304,6 +304,18 @@ Por el túnel adb → S24 (`rndis0` 10.101.33.64) → consola (esta vez en 10.10
 - **Pruebas** (`connectedDebugAndroidTest` del módulo, 9, estables en 4 vueltas): guarda,
   conserva el tamaño y el resto del `.srm`, pausa, 60 cuadros por segundo, pinta rojo puro en la
   `Surface`, el cable pasa datos, sin cable no, cerrar sin arrancar, y rechaza lo que no es ROM.
+- **Con los juegos del usuario** (`JuegoRealTest`, 2026-10-20; las ROMs y partidas van en
+  `android/emulador/src/androidTest/assets/muestras/`, que no se versiona): su Rojo Fuego
+  (`BPRS`, español) arranca, muestra "CONTINUAR · Rojo · 34:18 · Pokédex 78 · 5 medallas",
+  el repaso "Hagamos memoria…" (B lo salta), Isla Canela a color, y por el menú GUARDAR →
+  "Rojo guardó la partida": la partida que entrega el emulador es válida (ranura nueva con el
+  contador 53 → 54, las 14 secciones con su suma bien, la ranura vieja intacta). Rojo Fuego y
+  Verde Hoja juntos con el cable: los dos a 59.7 cuadros por segundo. Ojo: la partida de Verde
+  Hoja del usuario está vacía (arranca una nueva), así que para un intercambio real de verdad hace
+  falta avanzar otro juego hasta tener la Pokédex (Rojo Fuego ↔ Verde Hoja se pueden cambiar
+  desde ahí; con Rubí/Zafiro/Esmeralda, Rojo Fuego necesita la Pokédex Nacional).
+- En la consola, junto a las ROMs hay archivos sin extensión y basura de macOS (`._…`): la
+  búsqueda de ROMs exige el nombre exacto con `.gba` o `.zip`, así que no los toma.
 - **El `.state.auto` de RetroArch**: el teléfono empieza desde lo último que se guardó dentro
   del juego, no desde donde se quedó la consola. RetroArch escribe la partida y el estado juntos
   al cerrar el juego, así que por las fechas no se sabe si hay avance solo en el estado: la app
