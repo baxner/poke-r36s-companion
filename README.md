@@ -1,5 +1,7 @@
 # PokeR36S Companion
 
+**Español** · [English](README.en.md)
+
 App de Android para cuidar tus partidas de Pokémon de Game Boy Advance de una **R36S con ArkOS**:
 las respalda por el cable USB, las edita como PKHeX, intercambia Pokémon entre ellas y deja
 seguir jugándolas en el teléfono, todo sin internet.
